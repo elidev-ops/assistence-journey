@@ -1,0 +1,59 @@
+:root {
+  --bg-primary: #fff;
+  --bg-secondary: #f5f6fa;
+
+  --color-primary: #713bdb;
+  --color-primary-darker: #642ad6;
+  --color-secondary: #dc0073;
+  --color-border: #ccc;
+  --color-warning: #fef3c7;
+  --color-error: #ffadbb;
+
+  --text-color-primary: #181818;
+  --text-color-secondary: #fff;
+  --text-color-warning: #f59e0b;
+  --text-color-error: #ff1f40;
+
+  --radius-normal: 8px;
+  --radius-small: 4px;
+}
+
+.msg {
+  --arrow: transparent;
+  padding: 1em;
+  border-radius: var(--radius-normal);
+  position: absolute;
+  top: 0;
+  left: 530px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  
+}
+
+.msg span {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.msg::after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
+  border: 8px solid transparent;
+  border-top-color: var(--arrow);
+  position: absolute;
+  top: 0;
+  left: -8px;
+}
+
+.warning {
+  --arrow: var(--color-warning);
+  background-color: var(--color-warning);
+  color: var(--text-color-warning);
+}
+
+.error {
+  --arrow: var(--color-error);
+  background-color: var(--color-error);
+  color: var(--text-color-error);
+}

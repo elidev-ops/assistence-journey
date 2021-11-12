@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/dashboad.css">
+  <link rel="stylesheet" href="css/elements.css">
+  <link rel="stylesheet" href="css/messages.css">
+</head>
+
+<body>
+  <div class="root">
+    <main class="dashboard">
+      <header class="header">
+        <div class="search">
+          <i class='bx bx-search'></i>
+          <input type="text" name="search" data-js="search" placeholder="Pesquisar...">
+        </div>
+        <div class="profile">
+          <button class="darkmode icon">
+            <i class='bx bxs-moon'></i>
+          </button>
+          <img data-img="profile" src="" alt="somethings">
+          <button class="profile_name">
+            <span>John Doe</span>
+            <i class='bx bx-chevron-down'></i>
+          </button>
+          <ul class="profile_content">
+            <li>
+              <a href="#">
+                <i class='bx bxs-cog'></i>
+                Configuração
+              </a>
+            </li>
+            <li>
+              <a href="#" data-js="logout">
+                <i class='bx bx-log-out'></i>
+                Sair
+              </a>
+            </li>
+          </ul>
+        </div>
+      </header>
+      <div class="sidebar">
+        <h2 class="company_name">_company</h2>
+        <ul class="links">
+          <li class="active only">
+            <a href="#">
+              <i class='bx bxs-home'></i>
+              <span>Inicio</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class='bx bxs-user'></i>
+              <span>Clientes</span>
+            </a>
+            <ul class="links_sub">
+              <li>
+                <a href="#">Cadastrar <i class='bx bx-plus'></i></a>
+              </li>
+              <li>
+                <a href="#">Listar</a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="#">
+              <i class='bx bxs-devices'></i>
+              <span>Dispositivos</span>
+            </a>
+            <ul class="links_sub">
+              <li>
+                <a href="#">Cadastrar <i class='bx bx-plus'></i></a>
+              </li>
+              <li>
+                <a href="#">Listar</a>
+              </li>
+            </ul>
+          </li>
+          <li class="only">
+            <a href="#">
+              <i class='bx bxs-receipt'></i>
+              <span>Histórico</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <section class="main">
+        <div class="main_list">
+          <h1 class="main_list-title">Todos os produtos</h1>
+          <span class="main_list-sub">4 produtos</span>
+          <div class="main_list-container">
+            <div class="main_list-container-block progress" data-status="em progresso">
+              <div class="main_list-container--header">
+                <span></span>
+                <span>Updated</span>
+                <span>Client</span>
+                <span>Assignee</span>
+                <span>opt</span>
+              </div>
+              <div class="main_list-container--box">
+                <span>Samsung A10</span>
+                <span data-text="Mar 26 2021 15:00">Mar 26</span>
+                <span data-text="Name completo amostra">Client 00</span>
+                <span data-text="Name completo amostra">Assignee 00</span>
+                <button>
+                  <i class='bx bx-dots-horizontal-rounded'></i>
+                </button>
+              </div>
+              <div class="main_list-container--box">
+                <span>Samsung A10</span>
+                <span data-text="Mar 26 2021 15:00">Mar 26</span>
+                <span data-text="Name completo amostra">Client 00</span>
+                <span data-text="Name completo amostra">Assignee 00</span>
+                <button>
+                  <i class='bx bx-dots-horizontal-rounded'></i>
+                </button>
+              </div>
+            </div>
+            <div class="main_list-container-block awaiting" data-status="aguardando">
+              <div class="main_list-container--header">
+                <span></span>
+                <span>Updated</span>
+                <span>Client</span>
+                <span>Assignee</span>
+                <span>opt</span>
+              </div>
+              <div class="main_list-container--box">
+                <span>Samsung A10</span>
+                <span data-text="Mar 26 2021 15:00">Mar 26</span>
+                <span data-text="Name completo amostra">Client 00</span>
+                <span data-text="Name completo amostra">Assignee 00</span>
+                <button>
+                  <i class='bx bx-dots-horizontal-rounded'></i>
+                </button>
+              </div>
+            </div>
+            <div class="main_list-container-block delivered" data-status="entregue">
+              <div class="main_list-container--header">
+                <span></span>
+                <span>Updated</span>
+                <span>Client</span>
+                <span>Assignee</span>
+                <span>opt</span>
+              </div>
+              <div class="main_list-container--box">
+                <span>Samsung A10</span>
+                <span data-text="Mar 26 2021 15:00">Mar 26</span>
+                <span data-text="Name completo amostra">Client 00</span>
+                <span data-text="Name completo amostra">Assignee 00</span>
+                <button>
+                  <i class='bx bx-dots-horizontal-rounded'></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer class="footer">
+        <span>Powered by Elivelton S.</span>
+      </footer>
+    </main>
+  </div>
+  <script type="module" src="js/dashboard.js"></script>
+  <script type="module" src="js/post-request.js"></script>
+  <script type="module" src="js/devices-page.js"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/elements.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <div class="root">
+    <div class="login-container">
+      <h1>Cadastro de funcionário</h1>
+      <form data-js="form">
+        <div class="input-box">
+          <input type="text" name="company" placeholder="Empresa">
+        </div>
+        <div class="input-box">
+          <input type="text" name="name" placeholder="Nome">
+        </div>
+        <div class="input-box">
+          <input type="text" name="username" placeholder="Usuario">
+        </div>
+        <div class="input-box">
+          <input type="text" name="email" placeholder="Email">
+        </div>
+        <div class="input-box">
+          <input type="password" name="password" placeholder="Senha">
+        </div>
+        <div class="input-box">
+          <input type="password" name="passwordConfirmation" placeholder="Confirmação de senha">
+        </div>
+        <button class="btn" data-js="signup">
+          <span>Cadastrar</span>
+        </button>
+      </form>
+      <div class="navigate">
+        <a href="/signin.html">
+          <i class='bx bxs-chevron-right'></i>
+          <span>Voltar para pagina de login.</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="js/signup.js"></script>
+</body>
+</html>

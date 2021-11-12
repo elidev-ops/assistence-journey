@@ -1,0 +1,70 @@
+:root {
+  --bg-primary: #fff;
+  --bg-secondary: #f5f6fa;
+
+  --color-primary: #713bdb;
+  --color-primary-darker: #642ad6;
+  --color-secondary: #dc0073;
+  --color-border: #ccc;
+  --color-warning: #fef3c7;
+  --color-error: #ffadbb;
+
+  --text-color-primary: #181818;
+  --text-color-secondary: #fff;
+  --text-color-warning: #f59e0b;
+  --text-color-error: #ff1f40;
+
+  --radius-normal: 8px;
+  --radius-small: 4px;
+}
+
+.input-box {
+  width: 500px;
+  margin-bottom: 1.5em;
+  position: relative;
+}
+
+.input-box input,
+.input-box select,
+.input-box textarea {
+  width: 100%;
+  height: 42px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-normal);
+  padding: 0 1em;
+}
+
+.input-box textarea {
+  height: 100px;
+  resize: none;
+}
+
+.input-box input:focus {
+  border-color: var(--color-primary);
+}
+
+.btn {
+  width: 100%;
+  height: 48px;
+  background-color: var(--color-primary);
+  color: var(--text-color-secondary);
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-normal);
+  border-style: solid;
+  border-width: 1px;
+  border-top-width: .0625rem;
+  border-bottom-width: calc(.3rem + .0625rem);
+  border-color: transparent;
+  border-bottom-color: rgba(0,0,0,0.2);
+  transition: all 100ms ease-in-out;
+}
+
+.btn:active {
+  transform: translateY(4px);
+  box-shadow: none;
+  border-bottom-width: 1px;
+}
