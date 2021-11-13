@@ -49,8 +49,8 @@
       <div class="sidebar">
         <h2 class="company_name">_company</h2>
         <ul class="links">
-          <li class="active only">
-            <a href="#">
+          <li class="active only" data-page="home">
+            <a href="#" data-page="home">
               <i class='bx bxs-home'></i>
               <span>Inicio</span>
             </a>
@@ -62,10 +62,10 @@
             </a>
             <ul class="links_sub">
               <li>
-                <a href="#">Cadastrar <i class='bx bx-plus'></i></a>
+                <a href="#" data-page="register/client">Cadastrar <i class='bx bx-plus'></i></a>
               </li>
               <li>
-                <a href="#">Listar</a>
+                <a href="#" data-page="list/client">Listar</a>
               </li>
             </ul>
           </li>
@@ -76,14 +76,14 @@
             </a>
             <ul class="links_sub">
               <li>
-                <a href="#">Cadastrar <i class='bx bx-plus'></i></a>
+                <a href="#" data-page="register/device">Cadastrar <i class='bx bx-plus'></i></a>
               </li>
               <li>
-                <a href="#">Listar</a>
+                <a href="#" data-page="list/device">Listar</a>
               </li>
             </ul>
           </li>
-          <li class="only">
+          <li class="only" data-page="history">
             <a href="#">
               <i class='bx bxs-receipt'></i>
               <span>Histórico</span>
@@ -92,75 +92,7 @@
         </ul>
       </div>
       <section class="main">
-        <div class="main_list">
-          <h1 class="main_list-title">Todos os produtos</h1>
-          <span class="main_list-sub">4 produtos</span>
-          <div class="main_list-container">
-            <div class="main_list-container-block progress" data-status="em progresso">
-              <div class="main_list-container--header">
-                <span></span>
-                <span>Updated</span>
-                <span>Client</span>
-                <span>Assignee</span>
-                <span>opt</span>
-              </div>
-              <div class="main_list-container--box">
-                <span>Samsung A10</span>
-                <span data-text="Mar 26 2021 15:00">Mar 26</span>
-                <span data-text="Name completo amostra">Client 00</span>
-                <span data-text="Name completo amostra">Assignee 00</span>
-                <button>
-                  <i class='bx bx-dots-horizontal-rounded'></i>
-                </button>
-              </div>
-              <div class="main_list-container--box">
-                <span>Samsung A10</span>
-                <span data-text="Mar 26 2021 15:00">Mar 26</span>
-                <span data-text="Name completo amostra">Client 00</span>
-                <span data-text="Name completo amostra">Assignee 00</span>
-                <button>
-                  <i class='bx bx-dots-horizontal-rounded'></i>
-                </button>
-              </div>
-            </div>
-            <div class="main_list-container-block awaiting" data-status="aguardando">
-              <div class="main_list-container--header">
-                <span></span>
-                <span>Updated</span>
-                <span>Client</span>
-                <span>Assignee</span>
-                <span>opt</span>
-              </div>
-              <div class="main_list-container--box">
-                <span>Samsung A10</span>
-                <span data-text="Mar 26 2021 15:00">Mar 26</span>
-                <span data-text="Name completo amostra">Client 00</span>
-                <span data-text="Name completo amostra">Assignee 00</span>
-                <button>
-                  <i class='bx bx-dots-horizontal-rounded'></i>
-                </button>
-              </div>
-            </div>
-            <div class="main_list-container-block delivered" data-status="entregue">
-              <div class="main_list-container--header">
-                <span></span>
-                <span>Updated</span>
-                <span>Client</span>
-                <span>Assignee</span>
-                <span>opt</span>
-              </div>
-              <div class="main_list-container--box">
-                <span>Samsung A10</span>
-                <span data-text="Mar 26 2021 15:00">Mar 26</span>
-                <span data-text="Name completo amostra">Client 00</span>
-                <span data-text="Name completo amostra">Assignee 00</span>
-                <button>
-                  <i class='bx bx-dots-horizontal-rounded'></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        
       </section>
       <footer class="footer">
         <span>Powered by Elivelton S.</span>
@@ -168,7 +100,6 @@
     </main>
   </div>
   <script type="module" src="js/dashboard.js"></script>
-  <script type="module" src="js/post-request.js"></script>
   <script type="module" src="js/devices-page.js"></script>
 </body>
 </html>

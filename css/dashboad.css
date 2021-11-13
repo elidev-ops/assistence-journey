@@ -350,6 +350,7 @@ h1, h2, h3, h4 {
   box-shadow: 0 1px 2px rgba(0, 0, 0, .1), 0 2px 2px rgba(0, 0, 0, .05);
   display: flex;
   flex-direction: column;
+  animation: initPage 400ms ease-in-out forwards;
 }
 
 .main-box .title {
@@ -358,13 +359,17 @@ h1, h2, h3, h4 {
   padding: 1em 2em;
 }
 
+.main_list {
+  animation: initPage 400ms ease-in-out forwards;
+}
+
 .main_list-container {
   margin-top: 2em;
 }
 
 .main_list-container--header {
   display: grid;
-  grid-template-columns: 1fr 100px 100px 100px 40px;
+  grid-template-columns: 1fr repeat(4, 100px) 40px;
   grid-template-rows: 38px;
   min-height: 38px;
 }
@@ -397,7 +402,7 @@ h1, h2, h3, h4 {
   width: 100%;
   min-height: 38px;
   display: grid;
-  grid-template-columns: 1fr 100px 100px 100px 40px;
+  grid-template-columns: 1fr repeat(4, 100px) 40px;
   grid-template-rows: 38px;
   box-shadow: 0 0 10px rgba(0,0,0,.051);
   border-bottom: 1px solid var(--color-gray-highlight);
@@ -416,6 +421,32 @@ h1, h2, h3, h4 {
   font-size: 1em;
   transition: all 200ms linear;
   position: relative;
+}
+
+.status {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-icon {
+  flex: 0;
+  width: 14px;
+  height: 14px;
+  display: block;
+  border-radius: 7px;
+}
+
+.status-icon.progress {
+  background-color: var(--color-primary);
+}
+.status-icon.awaiting {
+  background-color: var(--color-awaited);
+}
+.status-icon.delivered {
+  background-color: var(--color-delivered);
 }
 
 .main_list-container--box span:not(:first-of-type) {
@@ -457,21 +488,21 @@ h1, h2, h3, h4 {
   display: block;
 }
 
-.main_list-container--box button {
+.main_list-container--box .options {
   font-size: 1.8em;
   color: var(--color-gray);
   display: none;
 }
 
-.main_list-container--box button i {
+.main_list-container--box .options i {
   transition: all 200ms ease-in-out;
 }
 
-.main_list-container--box button:hover > i {
+.main_list-container--box .options:hover > i {
   color: var(--color-primary);
 }
 
-.main_list-container--box:hover > button {
+.main_list-container--box:hover > .options {
   display: block;
 }
 
@@ -796,8 +827,8 @@ h1, h2, h3, h4 {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: aqua;
   padding: 1em;
+  color: var(--color-gray);
 }
 
 @keyframes loading_v2 {
@@ -835,5 +866,16 @@ h1, h2, h3, h4 {
   }
   100% {
     transform: scale(1) perspective(400px) rotateX(0deg);
+  }
+}
+
+@keyframes initPage {
+  from {
+    opacity: 0;
+  transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

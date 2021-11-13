@@ -5,9 +5,7 @@ import { validationComposite, clientValidations, deviceValidations } from './val
 import { saveMessage } from './messages.js'
 import uuidv4 from './uuid.js'
 import { account } from './dashboard.js'
-
-const mainBoxContainerElm = document.querySelector('.main-box_content')
-const buttonSaveElm = document.querySelector('[data-js="save"]')
+import { firstAppointment } from './generate-client-appointments.js'
 
 let timeOut = null
 
@@ -29,14 +27,15 @@ const postRequest = (request) => ({
 
     data.id = uuidv4()
     data.employee = { name, surname, username }
-    data.status = 'progress'
     data.createdAt = new Date()
     data.updatedAt = new Date()
-    const exists = clientsRepo.findOne({ fone: data.fone })
+    const exists = clientsRepo.findOne({ phone: data.phone })
 
     if (!exists) {
       clientsRepo.insert(data)
+      firstAppointment()
     }
+    
     return exists !== undefined
   },
   postDevice: (data) => {
@@ -53,6 +52,7 @@ const postRequest = (request) => ({
       phone: client.phone,
       email: client.email
     }
+    data.status = -1
     data.createdAt = new Date()
     data.updatedAt = new Date()   
 
@@ -60,39 +60,44 @@ const postRequest = (request) => ({
   }
 })[request] || undefined
 
-mainBoxContainerElm.addEventListener('submit', async e => {
-  e.preventDefault()
-  const formElm = e.target
-
-  if (formElm.tagName === 'FORM') {
-    const key = formElm.dataset.form
-    const objectData = createData(formElm)  
-    const err = validationComposite(configForm(key).validation(objectData))
-    
-    if (err) {
-      executeError(err)
-      return
+export function startStorage () {
+  const mainBoxContainerElm = document.querySelector('.main-box_content')
+  const buttonSaveElm = document.querySelector('[data-js="save"]')
+  mainBoxContainerElm.addEventListener('submit', async e => {
+    e.preventDefault()
+    const formElm = e.target
+  
+    if (formElm.tagName === 'FORM') {
+      const key = formElm.dataset.form
+      const objectData = createData(formElm)
+      const err = validationComposite(configForm(key).validation(objectData))
+      console.log(err)
+      
+      if (err) {
+        executeError(err)
+        return
+      }
+      await activeButtonSend(buttonSaveElm)
+      const request = postRequest(key)(objectData)
+      const msgElm = !request ? saveMessage({
+        msg: configForm(key).message,
+        className: 'success'
+      }) : saveMessage({
+        msg: 'Error: Numero de cliente já cadastrado no sistema!',
+        className: 'error'
+      })
+      document.querySelector('[data-form]').append(msgElm)
+      setTimeout(() => msgElm.remove(), 3400)
     }
-    await activeButtonSend()
-    const request = postRequest(key)(objectData)
-    const msgElm = !request ? saveMessage({
-      msg: configForm(key).message,
-      className: 'success'
-    }) : saveMessage({
-      msg: 'Error: Numero de cliente já cadastrado no sistema!',
-      className: 'error'
-    })
-    document.querySelector('[data-form]').append(msgElm)
-    setTimeout(() => msgElm.remove(), 3400)
-  }
-})
+  })
+}
 
-async function activeButtonSend() {
+async function activeButtonSend(btn) {
   return new Promise(resolve => {
-    buttonSaveElm.classList.add('sending')
+    btn.classList.add('sending')
     if (!timeOut) {
       timeOut = setTimeout(() => {
-        buttonSaveElm.classList.remove('sending')
+        btn.classList.remove('sending')
         timeOut = null
         resolve()
       }, 3600)

@@ -1,23 +1,25 @@
 import uuidv4 from './uuid.js'
 
-export function getCacheRepository (collection) {
-  const dataCache = JSON.parse(localStorage.getItem(collection)) || []
-  
+export function getCacheRepository (collection) {  
+  let dataCache = JSON.parse(localStorage.getItem(collection)) || []
   function insert (data) {
     Object.assign(data, { id: uuidv4() })
     localStorage.setItem(collection, JSON.stringify([...dataCache, data]))
     return { id: data.id }
   }
   function find (params = {}) {
-    const [key, value] = Object.entries(params) || []
+    dataCache = JSON.parse(localStorage.getItem(collection)) || []
+    const [key, value] = Object.entries(params)[0] || []
     const data =  dataCache.filter(data => data[key] === value)
     return data.length ? data : dataCache
   }
   function findOne (params) {
-    const [key, value] = Object.entries(params) || []
+    dataCache = JSON.parse(localStorage.getItem(collection)) || []
+    const [key, value] = Object.entries(params)[0] || []
     return dataCache.find(data => data[key] === value)
   }
   function updateOne ({ id }, data) {
+    dataCache = JSON.parse(localStorage.getItem(collection)) || []
     let isValid = undefined
     for (const i in dataCache) {
       if (dataCache[i].id === id) {
@@ -31,6 +33,7 @@ export function getCacheRepository (collection) {
     return isValid
   }
   function deleteOne (findParam) {
+    dataCache = JSON.parse(localStorage.getItem(collection)) || []
     const id = typeof findParam === 'string' ? findParam : findParam.id
     const newData = dataCache.filter(data => data.id !== id)
     localStorage.setItem(collection, JSON.stringify(newData))
