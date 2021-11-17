@@ -5,7 +5,7 @@ import { validationComposite, clientValidations, deviceValidations } from './val
 import { saveMessage } from './messages.js'
 import uuidv4 from './uuid.js'
 import { account } from './dashboard.js'
-import { firstAppointment } from './generate-client-appointments.js'
+import { firstAppointmentClients, firstAppointmentDevices } from './generate-client-appointments.js'
 
 let timeOut = null
 
@@ -33,7 +33,7 @@ const postRequest = (request) => ({
 
     if (!exists) {
       clientsRepo.insert(data)
-      firstAppointment()
+      firstAppointmentClients()
     }
     
     return exists !== undefined
@@ -57,6 +57,7 @@ const postRequest = (request) => ({
     data.updatedAt = new Date()   
 
     devicesRepo.insert(data)
+    firstAppointmentDevices()
   }
 })[request] || undefined
 
