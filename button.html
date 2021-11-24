@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>button</title>
+</head>
+<style>
+  *, *::after, *::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f1f1f1;
+  }
+  
+</style>
+<body>
+  <script>
+    const { body } = document
+
+    const button = /*html*/ `
+      <button class="menu-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    `
+    body.insertAdjacentHTML('afterbegin', button)
+    const buttonElm = document.querySelector('.menu-toggle')
+    buttonElm.onclick = () => {
+      buttonElm.classList.toggle('active')
+    }
+  </script>
+</body>
+</html>

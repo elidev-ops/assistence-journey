@@ -6,6 +6,8 @@ import { startStorage } from './post-request.js'
 import { firstAppointmentClients, firstAppointmentDevices } from './generate-client-appointments.js'
 import { createHtmlDevices } from './devices-page.js'
 import { updateButton } from './update-button.js'
+import { deleteAndUpdate } from './delete-and-update.js'
+import { createHtmlClients } from './clients-page.js'
 
 sessionValidation()
 document.cookie.split('; ')
@@ -96,7 +98,69 @@ function getPage(page) {
       },
     },
     list: {
-      client: async () => { },
+      client: async () => {
+        const response = await api.get('/views/list-clients.html')
+        sectionMainElm.innerHTML = await response.text()
+        document.querySelector('.main_list-sub').textContent = `${clientsRepo.find().length} clientes`
+        const mainListContainer = document.querySelector('.main_list-container')
+        showClientContents(mainListContainer)
+        mainListContainer.addEventListener('mousemove', e => {
+          const element = e.target
+          if (element.dataset.textView) {
+            const { pageX } = e
+            const highlightBox = element.nextElementSibling
+            highlightBox.classList.add('show')
+            highlightBox.style.setProperty('top', e.target.offsetTop - 5 - highlightBox.offsetHeight + 'px')
+            highlightBox.style.setProperty('left', (pageX - mainListContainer.offsetLeft - 210) - (highlightBox.offsetWidth / 2) + 'px')
+          }
+        })
+        mainListContainer.addEventListener('click', e => {
+          const main = document.querySelector('.main')
+          const clickedElement = e.target
+          if (clickedElement.className === 'options') {
+            const activeItem = Array.from(document.querySelectorAll('.options-menu'))
+              .find(opt => opt.classList.contains('active'))
+            activeItem?.classList.remove('active')
+            const optionMenuElm = clickedElement.nextElementSibling
+            if (activeItem === optionMenuElm) {
+              activeItem.classList.remove('active')
+              return
+            }
+            optionMenuElm.classList.add('active')
+
+            const posY = clickedElement.offsetTop + clickedElement.offsetHeight
+            const posX = clickedElement.offsetLeft + clickedElement.offsetWidth - optionMenuElm.offsetWidth 
+
+            optionMenuElm.style.setProperty('top', posY + 'px')  
+            optionMenuElm.style.setProperty('left', posX + 'px')
+          }
+          if (e.target.dataset.deviceId) {
+            const clickedElement = e.target
+            Array.from(document.querySelectorAll('[data-device-body]'))
+              .find(elm => elm.classList.contains('show'))?.classList.remove('show')
+            const contentId = document.querySelector(`[data-device-body="${e.target.dataset.deviceId}"]`)
+            contentId.classList.add('show')
+
+            const clickedPosition = clickedElement.offsetTop
+            contentId.style.setProperty('top', clickedPosition + 'px')
+            main.scroll({
+              top: e.target.offsetTop,
+              left: 0,
+              behavior: 'smooth'
+            })
+          }
+          if (e.target.dataset.closeId) {
+            const contentId = document.querySelector(`[data-device-body="${e.target.dataset.closeId}"]`)
+            contentId.classList.remove('show')
+          }
+          if (e.target.dataset.option) {
+            const { option, clientId } = e.target.dataset
+            console.log()
+            deleteAndUpdate(clientsRepo, option, clientId)()
+            showClientContents(mainListContainer)
+          }
+        })
+      },
       device: async () => {
         const response = await api.get('/views/list-devices.html')
         sectionMainElm.innerHTML = await response.text()
@@ -120,25 +184,41 @@ function getPage(page) {
         }
         let i = 0
         const deviceToUpdateStatus = []
+        mainListContainer.addEventListener('contextmenu', rightClickHandle)
         mainListContainer.addEventListener('click', e => {
+          const main = document.querySelector('.main')
+          const clickedElement = e.target
+          if (clickedElement.className === 'options') {
+            const activeItem = Array.from(document.querySelectorAll('.options-menu'))
+              .find(opt => opt.classList.contains('active'))
+            activeItem?.classList.remove('active')
+            const optionMenuElm = clickedElement.nextElementSibling
+            if (activeItem === optionMenuElm) {
+              activeItem.classList.remove('active')
+              return
+            }
+            optionMenuElm.classList.add('active')
+
+            const posY = clickedElement.offsetTop + clickedElement.offsetHeight
+            const posX = clickedElement.offsetLeft + clickedElement.offsetWidth - optionMenuElm.offsetWidth 
+
+            optionMenuElm.style.setProperty('top', posY + 'px')  
+            optionMenuElm.style.setProperty('left', posX + 'px')
+          }
           if (e.target.dataset.deviceId) {
+            const clickedElement = e.target
             Array.from(document.querySelectorAll('[data-device-body]'))
               .find(elm => elm.classList.contains('show'))?.classList.remove('show')
             const contentId = document.querySelector(`[data-device-body="${e.target.dataset.deviceId}"]`)
             contentId.classList.add('show')
 
-            const posBox = contentId.getBoundingClientRect()
-            const posMain = mainListContainer.getBoundingClientRect()
-            const posA = posMain.bottom - posMain.height
-            const posBoxY = posBox.height + e.target.offsetTop + posA
-
-            if (posBoxY >= posMain.height) {
-              contentId.style.setProperty('top', e.target.offsetTop + posA - (posBoxY - posMain.height) + 300 + 'px')
-              return
-            }
-
-            contentId.style.setProperty('top', e.target.offsetTop + posA + 'px')
-            e.target.offsetTop + posBox.height
+            const clickedPosition = clickedElement.offsetTop
+            contentId.style.setProperty('top', clickedPosition + 'px')
+            main.scroll({
+              top: e.target.offsetTop,
+              left: 0,
+              behavior: 'smooth'
+            })
           }
           if (e.target.dataset.closeId) {
             const contentId = document.querySelector(`[data-device-body="${e.target.dataset.closeId}"]`)
@@ -190,6 +270,11 @@ function getPage(page) {
               setTimeout(() => updateButtonElm.remove(), 1400)
             })
           }
+          if (e.target.dataset.option) {
+            const { option, deviceId } = e.target.dataset
+            deleteAndUpdate(devicesRepo, option, deviceId)()
+            showDeviceContents(mainListContainer)
+          }
         })
       },
     },
@@ -202,7 +287,7 @@ function getPage(page) {
   second ? toPage(first)[second]() : toPage(first)()
 }
 
-function showDeviceContents(elm) {
+function showDeviceContents (elm) {
   const devicesHtmlProgress = devicesRepo.find()
     .filter(data => data.status === -1)
     .reduce(createHtmlDevices, '')
@@ -214,4 +299,22 @@ function showDeviceContents(elm) {
     .reduce(createHtmlDevices, '')
 
   elm.innerHTML = (devicesHtmlProgress + devicesHtmlAwaiting + devicesHtmlDelivered) || '<span>Sem produtos cadastrados!</span>'
+}
+
+function showClientContents (elm) {
+  elm.innerHTML = clientsRepo.find().reduce(createHtmlClients, '') || '<span>Sem clientes no sistema!</span>'
+}
+
+function rightClickHandle(e) {
+  e.preventDefault()
+  if (e.target.dataset.optionContainer) return
+  const activeBoxes = Array.from(document.querySelectorAll('.options-menu'))
+  activeBoxes.find(box => box.classList.contains('active'))?.classList.remove('active')
+
+  const parent = e.target.closest('.main_list-container--box')
+  const optionsMenuElm = parent.querySelector('.options-menu')
+
+  optionsMenuElm.style.setProperty('top', e.clientY  - 81 + 'px')
+  optionsMenuElm.style.setProperty('left', e.clientX - 202 + 'px')
+  optionsMenuElm.classList.add('active')
 }

@@ -12,3 +12,30 @@ export const createDateBrazil = (date, type) => {
 export const convertToReal = (value) => {
   return parseFloat(value).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })
 }
+
+export const shortUuidv4 = (value) => {
+  return value.split('-')[0]
+}
+
+export const createNumberWhatsapp = (number) => {
+  const phone = number.replace(/[()\- ]/g, '')
+  const country = '+55'
+  const ddd = phone.slice(0, 2)
+  const numberNine = phone.slice(2, number.length).length < 9
+    ? '9' : phone.slice(2, 3)
+  const phoneNumber = phone.slice(2, number.length).length < 9
+    ? phone.slice(2, 6) + '-' + phone.slice(6, 10)
+    : phone.slice(3, 7) + '-' + phone.slice(7, 11)
+
+  return `${country} ${ddd} ${numberNine} ${phoneNumber}`
+}
+
+export const createBadge = (data) => {
+  const date = Intl.DateTimeFormat('pt-BR').format(new Date(data))
+  const dateNow = Intl.DateTimeFormat('pt-BR').format(new Date())
+  return date === dateNow ? 
+    `<span class="badge">
+      Novo
+    </span>`
+    : ''
+}

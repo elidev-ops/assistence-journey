@@ -9,9 +9,61 @@
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/elements.css">
   <link rel="stylesheet" href="css/main.css">
+  <style>
+    .bg-animated {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      overflow: hidden;
+      z-index: -1;
+    }
+    .bg {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+    .moon {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      mix-blend-mode: screen;
+    }
+    .mountain {
+      width: 105%;
+      height: 105%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+    .castle {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+  </style>
 </head>
 <body>
   <div class="root">
+    <div class="bg-animated">
+      <img src="assets/bg.png" class="bg">
+      <img src="assets/moon.png" class="moon">
+      <img src="assets/mountain.png" class="mountain">
+      <img src="assets/castle.png" class="castle">
+    </div>
     <div class="login-container">
       <h1>Cadastro de funcionário</h1>
       <form data-js="form">
@@ -46,5 +98,20 @@
     </div>
   </div>
   <script type="module" src="js/signup.js"></script>
+  <script>
+    const moon = document.querySelector('.moon')
+    const castle = document.querySelector('.castle')
+    const mountain = document.querySelector('.mountain')
+
+    document.addEventListener('mousemove', e => {
+      const { pageY, pageX } = e
+      moon.style.setProperty('top', (pageY * 0.01) + 'px')
+      moon.style.setProperty('left', (pageX * 0.01) + 'px')
+      castle.style.setProperty('top', -(pageY * 0.01) + 'px')
+      castle.style.setProperty('left', -(pageX * 0.01) + 'px')
+      mountain.style.setProperty('top', -(pageY * 0.01) + 'px')
+      mountain.style.setProperty('left', -(pageX * 0.01) + 'px')
+    })
+  </script>
 </body>
 </html>

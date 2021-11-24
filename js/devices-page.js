@@ -1,4 +1,4 @@
-import { createShortDate, convertToReal, createDateBrazil } from './utils.js'
+import { createShortDate, convertToReal, createDateBrazil, createBadge } from './utils.js'
 
 const status = [
   {
@@ -23,29 +23,28 @@ function getStatusName (sts) {
 }
 
 export function createHtmlDevices (acc, cur, index, arr) {
-  if (index === 0) acc +=
-    `<div class="main_list-container-block ${getStatusName(cur.status).className}" data-status="${getStatusName(cur.status).name}">
+  if (index === 0) acc += /* html */
+    `<div class="main_list-container-block">
       <div class="main_list-container--header">
-        <span></span>
+        <span class="${getStatusName(cur.status).className}">${getStatusName(cur.status).name}</span>
         <span>Atualizado</span>
         <span>Status</span>
         <span>Cliente</span>
         <span>Técnico</span>
         <span>OPT</span>
       </div>`
-  acc += `<div class="main_list-container--box">
+  acc += /* html */ `<div class="main_list-container--box">
     <div class="encapsulation">
       <span data-device-id="${cur.id}" class="encapsulation-title">${cur.brand} ${cur.model}</span>
       <div data-device-body="${cur.id}" class="main_list-container--content">
         <button data-close-id="${cur.id}" class="close">
           <i class='bx bx-plus'></i>
         </button>
-        <h2>Informação</h2>
-        <span>${cur.brand} ${cur.model}</span>
+        <h2>${cur.brand} ${cur.model} ${createBadge(cur.createdAt)}</h2>
         <span>Valor do serviço: ${convertToReal(cur.amount)}</span>
-        <span>Local: ${cur.storeroom}</span>
+        <span>Local de armazenamento: ${cur.storeroom}</span>
         <span>Cliente: ${cur.client.name}</span>
-        <span>Tecnico: ${cur.employee.name}</span>
+        <span>Técnico: ${cur.employee.name}</span>
         <span>Status do serviço: ${getStatusName(cur.status)?.name}</span>
         <span>Entrada: ${createDateBrazil(cur.createdAt, 'long')}</span>
         <span>Atualizado: ${createDateBrazil(cur.updatedAt, 'long')}</span>
@@ -67,9 +66,21 @@ export function createHtmlDevices (acc, cur, index, arr) {
       <span class="show-text" data-text-view="1">${cur.employee.name}</span>
       <span class="hint">${cur.employee.name}</span>
     </div>
-    <button class="options">
-      <i class='bx bx-dots-horizontal-rounded'></i>
-    </button>
+    <div class="encapsulation">
+      <button class="options">
+        <i class='bx bx-dots-horizontal-rounded'></i>
+      </button>
+      <div data-option-container="container" class="options-menu">
+        <button data-option-container="container" data-option="update" data-device-id="${cur.id}">
+          <i class='bx bx-edit'></i>
+          <span>Editar</span>
+        </button>
+        <button data-option-container="container" data-option="delete" data-device-id="${cur.id}">
+          <i class='bx bx-trash' ></i>
+          <span>Excluir</span>
+        </button>
+      </div>
+    </div>
   </div>`
   if (arr.lastIndexOf(cur) === arr.length - 1) acc += `</div>`
   return acc
