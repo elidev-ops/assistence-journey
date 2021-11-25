@@ -4,39 +4,57 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>button</title>
+  <title>Document</title>
 </head>
-<style>
-  *, *::after, *::before {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  body {
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f1f1f1;
-  }
-  
-</style>
 <body>
+  <div class="limiter">
+    <h1><a href="">micro router</a></h1>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About</a></li>
+      <li><a href="/post/42">Post</a></li>
+      <li><a href="/posts/1/asc">Posts</a></li>
+      <li><a href="/not-found">Not Found</a></li>
+    </ul>
+    <div class="display"></div>
+  </div>
+  <script src="js/routes.js"></script>
   <script>
-    const { body } = document
+    var display = document.querySelector('.display');
 
-    const button = /*html*/ `
-      <button class="menu-toggle">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-    `
-    body.insertAdjacentHTML('afterbegin', button)
-    const buttonElm = document.querySelector('.menu-toggle')
-    buttonElm.onclick = () => {
-      buttonElm.classList.toggle('active')
+    routes('/', function(ctx) {
+      display.textContent = 'Rota Home';
+    })
+
+    routes('/about', function(ctx) {
+      display.textContent = 'Rota About';
+    })
+
+    routes('/post/:id', function(ctx) {
+      display.textContent = 'Rota Post com id = ' + ctx.params.id;
+    })
+
+    routes('/posts/:page/:order?', function(ctx) {
+      var html = 'Rota Posts com page = ' + ctx.params.page;
+          html += ' e order = ' + ctx.params.order || '';
+      display.textContent = html;
+    })
+
+    routes('*', function(ctx) {
+      display.textContent = 'PAGE NOT FOUND';
+    })
+
+    routes.run();
+
+    var links = document.querySelectorAll('a');
+    var len = links.length;
+    while( len-- ) {
+      links[len].addEventListener('click', function(event) {
+        var element = event.target;
+        var path = element.pathname + element.search + (element.hash || '');
+        routes.go(path);
+        event.preventDefault();
+      });
     }
   </script>
 </body>

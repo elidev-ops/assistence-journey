@@ -39,3 +39,8 @@ export const createBadge = (data) => {
     </span>`
     : ''
 }
+
+export const createNormalBadge = (value) => 
+  `<span class="badge">
+      ${value}
+  </span>`

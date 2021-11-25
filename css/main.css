@@ -59,11 +59,13 @@ option {
 .navigate a > span {
   color: var(--text-color-primary);
   font-weight: 400;
+  pointer-events: none;
 }
 
 .navigate a > i {
   margin-right: 0.5em;
   color: var(--color-primary);
+  pointer-events: none;
 }
 
 .login-container {

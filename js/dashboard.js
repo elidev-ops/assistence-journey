@@ -3,7 +3,7 @@ import logout from './logout.js'
 import { sessionValidation } from './session-validation.js'
 import { api } from './request.js'
 import { startStorage } from './post-request.js'
-import { firstAppointmentClients, firstAppointmentDevices } from './generate-client-appointments.js'
+import { firstAppointment, secondAppointment } from './generate-client-appointments.js'
 import { createHtmlDevices } from './devices-page.js'
 import { updateButton } from './update-button.js'
 import { deleteAndUpdate } from './delete-and-update.js'
@@ -79,13 +79,15 @@ function getPage(page) {
       client: async () => {
         const response = await api.get('/views/cad-client.html')
         sectionMainElm.innerHTML = await response.text()
-        firstAppointmentClients()
+        firstAppointment(clientsRepo)
+        secondAppointment(clientsRepo)
         startStorage()
       },
       device: async () => {
         const response = await api.get('/views/cad-device.html')
         sectionMainElm.innerHTML = await response.text()
-        firstAppointmentDevices()
+        firstAppointment(devicesRepo)
+        secondAppointment(devicesRepo)
         const clientElm = document.querySelector('select[name="client"]')
         clientElm.innerHTML += clientsRepo.find()
           .sort((x, y) => {
@@ -133,6 +135,7 @@ function getPage(page) {
 
             optionMenuElm.style.setProperty('top', posY + 'px')  
             optionMenuElm.style.setProperty('left', posX + 'px')
+            optionMenuElm.lastElementChild.onclick = () => optionMenuElm.classList.remove('active')
           }
           if (e.target.dataset.deviceId) {
             const clickedElement = e.target
@@ -155,7 +158,6 @@ function getPage(page) {
           }
           if (e.target.dataset.option) {
             const { option, clientId } = e.target.dataset
-            console.log()
             deleteAndUpdate(clientsRepo, option, clientId)()
             showClientContents(mainListContainer)
           }
@@ -164,7 +166,7 @@ function getPage(page) {
       device: async () => {
         const response = await api.get('/views/list-devices.html')
         sectionMainElm.innerHTML = await response.text()
-        document.querySelector('.main_list-sub').textContent = `${devicesRepo.find().length} produtos`
+        document.querySelector('.main_list-sub').textContent = `${devicesRepo.find().length} dispositivos`
         const mainListContainer = document.querySelector('.main_list-container')
         showDeviceContents(mainListContainer)
         mainListContainer.addEventListener('mousemove', e => {
@@ -184,7 +186,6 @@ function getPage(page) {
         }
         let i = 0
         const deviceToUpdateStatus = []
-        mainListContainer.addEventListener('contextmenu', rightClickHandle)
         mainListContainer.addEventListener('click', e => {
           const main = document.querySelector('.main')
           const clickedElement = e.target
@@ -204,6 +205,7 @@ function getPage(page) {
 
             optionMenuElm.style.setProperty('top', posY + 'px')  
             optionMenuElm.style.setProperty('left', posX + 'px')
+            optionMenuElm.lastElementChild.onclick = () => optionMenuElm.classList.remove('active')
           }
           if (e.target.dataset.deviceId) {
             const clickedElement = e.target

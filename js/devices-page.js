@@ -73,11 +73,12 @@ export function createHtmlDevices (acc, cur, index, arr) {
       <div data-option-container="container" class="options-menu">
         <button data-option-container="container" data-option="update" data-device-id="${cur.id}">
           <i class='bx bx-edit'></i>
-          <span>Editar</span>
         </button>
         <button data-option-container="container" data-option="delete" data-device-id="${cur.id}">
           <i class='bx bx-trash' ></i>
-          <span>Excluir</span>
+        </button>
+        <button class="close">
+          <i class='bx bx-plus'></i>
         </button>
       </div>
     </div>

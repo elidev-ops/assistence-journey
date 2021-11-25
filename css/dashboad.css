@@ -16,6 +16,7 @@
   --color-delivered: #00b884;
   --color-dark: #181818;
   --color-blue: #1f69ff;
+  --color-gray-alpha: #f0f1f3;
 
   --color-active: #FF0844;
   --color-active-highlight: #FF084485;
@@ -650,30 +651,47 @@ a.show-text:hover {
 }
 
 .options-menu {
-  border: 4px solid rgba(0, 0, 0, .1);
   width: max-content;
+  max-height: calc(100vh - 20px);
   background-color: var(--bg-primary);
-  padding: 1em;
   position: absolute;
   right: 0;
   display: none;
-  flex-direction: column;
   align-items: center;
-  box-shadow: 0 15px 18px rgba(0, 0, 0, .1);
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+  box-shadow: 0 1px 10px 0 rgba(0,0,0,.25);
   border-radius: 8px;
+  padding: 1em;
   animation: dropdown 400ms cubic-bezier(.18,.89,.32,1.28);
 }
 
-[data-option="delete"]:hover {
-  color: var(--color-active)
+.options-menu_header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
-[data-option="edit"]:hover {
-  color: var(--color-blue)
+.options-menu .close {
+  position: unset;
+}
+
+[data-option="delete"] {
+  color: var(--color-active);
+}
+
+[data-option="update"] {
+  color: var(--color-blue);
 }
 
 .options-menu button {
-  font-size: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
 }
 
 .options-menu button span {
@@ -682,6 +700,7 @@ a.show-text:hover {
 
 .options-menu i {
   font-size: 1.4em;
+  pointer-events: none;
 }
 
 .options-menu.active {
@@ -775,7 +794,7 @@ a.show-text:hover {
   font-style: italic;
 }
 
-.main_list-container--content .close {
+.close {
   width: 32px;
   height: 32px;
   border-radius: 8px;
@@ -790,13 +809,13 @@ a.show-text:hover {
   transition: all 200ms linear;
 }
 
-.main_list-container--content .close > i {
+.close > i {
   transform: rotate(45deg);
   font-size: 1.8em;
   pointer-events: none;
 }
 
-.main_list-container--content .close:hover {
+.close:hover {
   color: var(--color-active-highlight);
 }
 
@@ -933,8 +952,17 @@ a.show-text:hover {
 }
 
 .container-box_content strong {
-  margin-bottom: 0.5em;
   font-size: 12px;
+}
+
+.container-box_content--header {
+  display: flex;
+  margin-bottom: 0.8em;
+}
+
+.container-box_content--header .badge {
+  font-size: 9px!important;
+  font-weight: 500;
 }
 
 .stats {
@@ -963,7 +991,7 @@ a.show-text:hover {
   display: block;
   position: absolute;
   top: -8px;
-  right: -20%;
+  right: -25%;
   font-weight: 700;
   color: var(--color-primary);
 }
