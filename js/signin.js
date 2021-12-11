@@ -29,7 +29,8 @@ function signInHandle (event) {
 }
 
 async function sendRequest (data) {
-  const isValid = accountsRepo.find('accounts')
+  console.log(data)
+  const isValid = accountsRepo.find()
     .find(account => account.username === data.username && account.password === data.password)
   
   if (!isValid) {

@@ -1,8 +1,8 @@
 export const createShortDate = (stringDate) => {
   const date = new Date(stringDate)
-  const intlDate = new Intl.DateTimeFormat('pt-br', { dateStyle: 'medium' })
-    .format(date).split('.')[0].replace('de ', '')
-  return intlDate.slice(0, 3) + intlDate.charAt(3).toUpperCase() + intlDate.slice(4)
+  const [day, month] = new Intl.DateTimeFormat('pt-br', { dateStyle: 'medium' })
+    .format(date).split('.')[0].replace('de ', '').split(' ')
+  return `${day.padStart(2, '0')} ${month.charAt(0).toUpperCase() + month.slice(1)}`
 }
 
 export const createDateBrazil = (date, type) => {

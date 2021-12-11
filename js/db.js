@@ -7,15 +7,22 @@ export function getCacheRepository (collection) {
     localStorage.setItem(collection, JSON.stringify([...dataCache, data]))
     return { id: data.id }
   }
-  function find (params = {}) {
+  function find (params = {}, optional) {
     dataCache = JSON.parse(localStorage.getItem(collection)) || []
-    const [key, value] = Object.entries(params)[0] || []
-    const data =  dataCache.filter(data => data[key] === value)
+    const [key, value] = Object.entries(!optional ? params : optional)[0] || []
+    let data = []
+    dataCache = dataCache.filter(data => data[key] === value)
+    if (typeof params === 'function') {
+      data = dataCache.filter(params)
+    }
     return data.length ? data : dataCache
   }
   function findOne (params) {
     dataCache = JSON.parse(localStorage.getItem(collection)) || []
     const [key, value] = Object.entries(params)[0] || []
+    if (typeof params === 'function') {
+      return dataCache.find(params)
+    }
     return dataCache.find(data => data[key] === value)
   }
   function updateOne ({ id }, data) {
@@ -26,6 +33,7 @@ export function getCacheRepository (collection) {
         Object.entries(data).forEach(([key, value]) => {
           dataCache[i][key] = value
         })
+        dataCache[i].updatedAt = new Date()
         isValid = dataCache[i]
       }
     }

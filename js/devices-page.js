@@ -1,4 +1,4 @@
-import { createShortDate, convertToReal, createDateBrazil, createBadge } from './utils.js'
+import { createShortDate, convertToReal, createDateBrazil, createBadge, createNumberWhatsapp } from './utils.js'
 
 const status = [
   {
@@ -33,7 +33,7 @@ export function createHtmlDevices (acc, cur, index, arr) {
         <span>Técnico</span>
         <span>OPT</span>
       </div>`
-  acc += /* html */ `<div class="main_list-container--box">
+  acc += /* html */ `<div class="main_list-container--box device">
     <div class="encapsulation">
       <span data-device-id="${cur.id}" class="encapsulation-title">${cur.brand} ${cur.model}</span>
       <div data-device-body="${cur.id}" class="main_list-container--content">
@@ -43,7 +43,13 @@ export function createHtmlDevices (acc, cur, index, arr) {
         <h2>${cur.brand} ${cur.model} ${createBadge(cur.createdAt)}</h2>
         <span>Valor do serviço: ${convertToReal(cur.amount)}</span>
         <span>Local de armazenamento: ${cur.storeroom}</span>
-        <span>Cliente: ${cur.client.name}</span>
+        <details>
+          <summary>
+            <span>Cliente: ${cur.client.name}</span>
+          </summary>
+          <span>Whatsapp: <a target="_blank" href="https://api.whatsapp.com/send?phone=${encodeURIComponent(createNumberWhatsapp(cur.client.phone))}&text=${encodeURIComponent('Olá')}"> ${createNumberWhatsapp(cur.client.phone)}</a></span>
+          <span>Email: ${cur.client.email}</span>
+        </details>
         <span>Técnico: ${cur.employee.name}</span>
         <span>Status do serviço: ${getStatusName(cur.status)?.name}</span>
         <span>Entrada: ${createDateBrazil(cur.createdAt, 'long')}</span>

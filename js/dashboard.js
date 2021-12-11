@@ -8,10 +8,13 @@ import { createHtmlDevices } from './devices-page.js'
 import { updateButton } from './update-button.js'
 import { deleteAndUpdate } from './delete-and-update.js'
 import { createHtmlClients } from './clients-page.js'
+import { convertToReal, shortUuidv4 } from './utils.js'
+import './create-history.js'
 
 sessionValidation()
 document.cookie.split('; ')
 
+const historyRepo = getCacheRepository('history')
 const accountsRepo = getCacheRepository('accounts')
 const clientsRepo = getCacheRepository('clients')
 const devicesRepo = getCacheRepository('devices')
@@ -106,52 +109,15 @@ function getPage(page) {
         document.querySelector('.main_list-sub').textContent = `${clientsRepo.find().length} clientes`
         const mainListContainer = document.querySelector('.main_list-container')
         showClientContents(mainListContainer)
-        mainListContainer.addEventListener('mousemove', e => {
-          const element = e.target
-          if (element.dataset.textView) {
-            const { pageX } = e
-            const highlightBox = element.nextElementSibling
-            highlightBox.classList.add('show')
-            highlightBox.style.setProperty('top', e.target.offsetTop - 5 - highlightBox.offsetHeight + 'px')
-            highlightBox.style.setProperty('left', (pageX - mainListContainer.offsetLeft - 210) - (highlightBox.offsetWidth / 2) + 'px')
-          }
-        })
+        mainListContainer.addEventListener('mousemove', mousemoveHandle)
         mainListContainer.addEventListener('click', e => {
           const main = document.querySelector('.main')
           const clickedElement = e.target
-          if (clickedElement.className === 'options') {
-            const activeItem = Array.from(document.querySelectorAll('.options-menu'))
-              .find(opt => opt.classList.contains('active'))
-            activeItem?.classList.remove('active')
-            const optionMenuElm = clickedElement.nextElementSibling
-            if (activeItem === optionMenuElm) {
-              activeItem.classList.remove('active')
-              return
-            }
-            optionMenuElm.classList.add('active')
 
-            const posY = clickedElement.offsetTop + clickedElement.offsetHeight
-            const posX = clickedElement.offsetLeft + clickedElement.offsetWidth - optionMenuElm.offsetWidth 
+          clickedElement.className === 'options' ? optionMenuHandle(clickedElement) : null
+          e.target.dataset.deviceId ? infoDataHandler(e) : null
 
-            optionMenuElm.style.setProperty('top', posY + 'px')  
-            optionMenuElm.style.setProperty('left', posX + 'px')
-            optionMenuElm.lastElementChild.onclick = () => optionMenuElm.classList.remove('active')
-          }
-          if (e.target.dataset.deviceId) {
-            const clickedElement = e.target
-            Array.from(document.querySelectorAll('[data-device-body]'))
-              .find(elm => elm.classList.contains('show'))?.classList.remove('show')
-            const contentId = document.querySelector(`[data-device-body="${e.target.dataset.deviceId}"]`)
-            contentId.classList.add('show')
-
-            const clickedPosition = clickedElement.offsetTop
-            contentId.style.setProperty('top', clickedPosition + 'px')
-            main.scroll({
-              top: e.target.offsetTop,
-              left: 0,
-              behavior: 'smooth'
-            })
-          }
+          
           if (e.target.dataset.closeId) {
             const contentId = document.querySelector(`[data-device-body="${e.target.dataset.closeId}"]`)
             contentId.classList.remove('show')
@@ -169,16 +135,7 @@ function getPage(page) {
         document.querySelector('.main_list-sub').textContent = `${devicesRepo.find().length} dispositivos`
         const mainListContainer = document.querySelector('.main_list-container')
         showDeviceContents(mainListContainer)
-        mainListContainer.addEventListener('mousemove', e => {
-          const element = e.target
-          if (element.dataset.textView) {
-            const { pageX } = e
-            const highlightBox = element.nextElementSibling
-            highlightBox.classList.add('show')
-            highlightBox.style.setProperty('top', e.target.offsetTop - 5 - highlightBox.offsetHeight + 'px')
-            highlightBox.style.setProperty('left', (pageX - mainListContainer.offsetLeft - 215) - (highlightBox.offsetWidth / 2) + 'px')
-          }
-        })
+        mainListContainer.addEventListener('mousemove', mousemoveHandle)
         const status = {
           progress: -1,
           awaiting: 0,
@@ -189,39 +146,10 @@ function getPage(page) {
         mainListContainer.addEventListener('click', e => {
           const main = document.querySelector('.main')
           const clickedElement = e.target
-          if (clickedElement.className === 'options') {
-            const activeItem = Array.from(document.querySelectorAll('.options-menu'))
-              .find(opt => opt.classList.contains('active'))
-            activeItem?.classList.remove('active')
-            const optionMenuElm = clickedElement.nextElementSibling
-            if (activeItem === optionMenuElm) {
-              activeItem.classList.remove('active')
-              return
-            }
-            optionMenuElm.classList.add('active')
 
-            const posY = clickedElement.offsetTop + clickedElement.offsetHeight
-            const posX = clickedElement.offsetLeft + clickedElement.offsetWidth - optionMenuElm.offsetWidth 
-
-            optionMenuElm.style.setProperty('top', posY + 'px')  
-            optionMenuElm.style.setProperty('left', posX + 'px')
-            optionMenuElm.lastElementChild.onclick = () => optionMenuElm.classList.remove('active')
-          }
-          if (e.target.dataset.deviceId) {
-            const clickedElement = e.target
-            Array.from(document.querySelectorAll('[data-device-body]'))
-              .find(elm => elm.classList.contains('show'))?.classList.remove('show')
-            const contentId = document.querySelector(`[data-device-body="${e.target.dataset.deviceId}"]`)
-            contentId.classList.add('show')
-
-            const clickedPosition = clickedElement.offsetTop
-            contentId.style.setProperty('top', clickedPosition + 'px')
-            main.scroll({
-              top: e.target.offsetTop,
-              left: 0,
-              behavior: 'smooth'
-            })
-          }
+          clickedElement.className === 'options' ? optionMenuHandle(clickedElement) : null
+          e.target.dataset.deviceId ? infoDataHandler(e) : null
+          
           if (e.target.dataset.closeId) {
             const contentId = document.querySelector(`[data-device-body="${e.target.dataset.closeId}"]`)
             contentId.classList.remove('show')
@@ -284,12 +212,52 @@ function getPage(page) {
       const response = await api.get('/views/main.html')
       sectionMainElm.innerHTML = await response.text()
     },
-    history: () => { console.log('history') }
+    history: async () => {
+      const response = await api.get('/views/history.html')
+      sectionMainElm.innerHTML = await response.text()
+      document.querySelector('.main_list-sub').textContent = `${historyRepo.find().length} caixas`
+      const mainListContainer = document.querySelector('.main_list-container')
+
+      const historyHtml = historyRepo.find()
+        .sort((x, y) => {
+          let a = new Date(x.createdAt).getTime(),
+            b = new Date(y.createdAt).getTime()
+          return a > b ? 0 : 1
+        })
+        .reduce((acc, cur, index, arr) => {
+        if (index === 0) {
+          acc += /* html */ `
+          <div class="history-container">
+            <div class="history-header">
+              <span>Id</span>
+              <span>Data</span>
+              <span>Status</span>
+              <span>Quantidade</span>
+              <span>Lucro</span>
+              <span>Opt</span>
+            </div>`
+        }
+        acc += /* html */ `
+        <div class="history-content ${cur.date ? 'closed' : 'open'}">
+          <span class="history-content_link">${shortUuidv4(cur.id)}</span>
+          <span>${cur.date ? cur.date : '----'}</span>
+          <span class="${cur.date ? 'closed' : 'open'}">${cur.date ? 'Fechado' : 'Aberto'}</span>
+          <span>${cur.totalDevices}</span>
+          <span>${!cur.date ? convertToReal(cur.income) + ' de ' + convertToReal(cur.mediaIncome) : convertToReal(cur.income)}</span>
+          <button class="close-history">
+            <i class='bx bxs-lock-open-alt'></i>
+          </button>
+        </div>`
+        if (arr.lastIndexOf(cur) === arr.length - 1) acc += `</div>`
+        return acc
+      }, '')
+      mainListContainer.innerHTML = historyHtml
+    }
   })[uri]
   second ? toPage(first)[second]() : toPage(first)()
 }
 
-function showDeviceContents (elm) {
+function showDeviceContents(elm) {
   const devicesHtmlProgress = devicesRepo.find()
     .filter(data => data.status === -1)
     .reduce(createHtmlDevices, '')
@@ -303,20 +271,61 @@ function showDeviceContents (elm) {
   elm.innerHTML = (devicesHtmlProgress + devicesHtmlAwaiting + devicesHtmlDelivered) || '<span>Sem produtos cadastrados!</span>'
 }
 
-function showClientContents (elm) {
+function showClientContents(elm) {
   elm.innerHTML = clientsRepo.find().reduce(createHtmlClients, '') || '<span>Sem clientes no sistema!</span>'
 }
 
-function rightClickHandle(e) {
-  e.preventDefault()
-  if (e.target.dataset.optionContainer) return
-  const activeBoxes = Array.from(document.querySelectorAll('.options-menu'))
-  activeBoxes.find(box => box.classList.contains('active'))?.classList.remove('active')
+function mousemoveHandle(e) {
+  const element = e.target
+  if (element.dataset.textView) {
+    const { pageX } = e
+    const mainListContainer = e.target.closest('.main_list-container')
+    const highlightBox = element.nextElementSibling
+    highlightBox.classList.add('show')
+    highlightBox.style.setProperty('top', e.target.offsetTop - 5 - highlightBox.offsetHeight + 'px')
+    highlightBox.style.setProperty('left', (pageX - mainListContainer.offsetLeft - 210) - (highlightBox.offsetWidth / 2) + 'px')
+  }
+}
 
-  const parent = e.target.closest('.main_list-container--box')
-  const optionsMenuElm = parent.querySelector('.options-menu')
+function optionMenuHandle(elm) {
+  const activeItem = Array.from(
+    document.querySelectorAll('.options-menu')
+  ).find(opt => opt.classList.contains('active'))
+  activeItem?.classList.remove('active')
+  const optionMenuElm = elm.nextElementSibling
+  if (activeItem === optionMenuElm) {
+    activeItem.classList.remove('active')
+    return
+  }
+  optionMenuElm.classList.add('active')
 
-  optionsMenuElm.style.setProperty('top', e.clientY  - 81 + 'px')
-  optionsMenuElm.style.setProperty('left', e.clientX - 202 + 'px')
-  optionsMenuElm.classList.add('active')
+  const posY = elm.offsetTop + elm.offsetHeight
+  const posX =
+    elm.offsetLeft +
+    elm.offsetWidth -
+    optionMenuElm.offsetWidth
+
+  optionMenuElm.style.setProperty('top', posY + 'px')
+  optionMenuElm.style.setProperty('left', posX + 'px')
+  optionMenuElm.lastElementChild.onclick = () =>
+    optionMenuElm.classList.remove('active')
+}
+
+function infoDataHandler(e) {
+  const clickedElement = e.target
+  const main = e.target.offsetParent.parentElement
+
+  Array.from(document.querySelectorAll('[data-device-body]'))
+    .find(elm => elm.classList.contains('show'))?.classList.remove('show')
+
+  const contentId = document.querySelector(`[data-device-body="${e.target.dataset.deviceId}"]`)
+  contentId.classList.add('show')
+  
+  const clickedPosition = clickedElement.offsetTop
+  contentId.style.setProperty('top', clickedPosition + 'px')
+  main.scroll({
+    top: e.target.offsetTop,
+    left: 0,
+    behavior: 'smooth'
+  })
 }

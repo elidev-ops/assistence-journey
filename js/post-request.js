@@ -6,7 +6,7 @@ import { saveMessage } from './messages.js'
 import uuidv4 from './uuid.js'
 import { account } from './dashboard.js'
 import { firstAppointment, secondAppointment } from './generate-client-appointments.js'
-
+import { updateHistory } from './create-history.js'
 let timeOut = null
 
 const configForm = (from) => ({
@@ -35,6 +35,7 @@ const postRequest = (request) => ({
       clientsRepo.insert(data)
       firstAppointment(clientsRepo)
       secondAppointment(clientsRepo)
+      updateHistory()
     }
     
     return exists !== undefined
@@ -60,6 +61,7 @@ const postRequest = (request) => ({
     devicesRepo.insert(data)
     firstAppointment(devicesRepo)
     secondAppointment(devicesRepo)
+    updateHistory()
   }
 })[request] || undefined
 
