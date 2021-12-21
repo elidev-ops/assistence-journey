@@ -9,6 +9,26 @@ const formElm = document.querySelector('[data-js="form"]')
 const accountRepo = getCacheRepository('accounts')
 formElm.addEventListener('submit', signUpHandle)
 
+if (accountRepo.find().length) {
+  const companyElm = document.querySelector('input[name=company]').parentNode
+  const companyNames = Array.from(new Set(accountRepo.find().map(acc => acc.company)))
+    .reduce((acc, cur, index, arr) => {
+      if (index === 0) acc += /* html */`
+          <input
+            list="companies"
+            name="company"
+            autocomplete="off"
+            placeholder="Empresa">
+          <datalist id="companies">
+          `
+      acc += /* html */ `<option value="${cur}">${cur}</option>`
+      if (arr.lastIndexOf(cur) === arr.length - 1) acc += /* html */ `</datalist>`
+      return acc
+    }, '')
+    console.log(companyNames)
+    companyElm.innerHTML = companyNames
+}
+
 function signUpHandle (event) {
   event.preventDefault()
 

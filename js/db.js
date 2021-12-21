@@ -1,52 +1,82 @@
 import uuidv4 from './uuid.js'
 
-export function getCacheRepository (collection) {  
-  let dataCache = JSON.parse(localStorage.getItem(collection)) || []
-  function insert (data) {
+const defaultValue = { params: {}, order: undefined }
+const orderOptions = (order) => ({ asc: 1, desc: -1 })[order] || 1
+
+function orderBy (data, order) {
+	return data.sort((x, y) => {
+  	const firstValue = orderOptions(order.toLowerCase())
+    const secondValue = firstValue > 0 ? -1 : 1
+  	let a = x.name.toUpperCase()
+    let b = y.name.toUpperCase()
+    return a === b ? 0 : a > b ? firstValue : secondValue
+  })
+}
+
+export function getCacheRepository (repo) {
+	let dataCache = JSON.parse(localStorage.getItem(repo)) || []
+  
+  const insert = (data) => {
+    dataCache = JSON.parse(localStorage.getItem(repo)) || []
     Object.assign(data, { id: uuidv4() })
-    localStorage.setItem(collection, JSON.stringify([...dataCache, data]))
+    localStorage.setItem(repo, JSON.stringify([...dataCache, data]))
     return { id: data.id }
-  }
-  function find (params = {}, optional) {
-    dataCache = JSON.parse(localStorage.getItem(collection)) || []
-    const [key, value] = Object.entries(!optional ? params : optional)[0] || []
-    let data = []
+  } 
+
+  const find = (callback = {}, { params, order } = defaultValue) => {
+    dataCache = JSON.parse(localStorage.getItem(repo)) || []
+    const [key, value] = Object.entries(
+      callback.params ? callback.params : params || {})[0] || []
     dataCache = dataCache.filter(data => data[key] === value)
-    if (typeof params === 'function') {
-      data = dataCache.filter(params)
+    if (typeof callback && callback instanceof Function) {
+      dataCache = dataCache.filter(callback)
     }
-    return data.length ? data : dataCache
+    return callback.order 
+      ? orderBy(dataCache, callback.order) : order 
+      ? orderBy(dataCache, order) : dataCache.sort((a, b) =>
+        new Date(a.createdAt).getTime() < new Date(b.createdAt).getTime())
   }
-  function findOne (params) {
-    dataCache = JSON.parse(localStorage.getItem(collection)) || []
-    const [key, value] = Object.entries(params)[0] || []
-    if (typeof params === 'function') {
-      return dataCache.find(params)
+  
+  const findOne = (callback, { params } = {}) => {
+  	dataCache = JSON.parse(localStorage.getItem(repo)) || []
+    const [key, value] = Object.entries(
+      callback.params ? callback.params : params || {})[0] || []
+    if (typeof callback && callback instanceof Function) {
+      return dataCache.find(callback)
     }
-    return dataCache.find(data => data[key] === value)
+    dataCache = dataCache.find(data => data[key] === value)
+    return callback || params ? dataCache : {}
   }
-  function updateOne ({ id }, data) {
-    dataCache = JSON.parse(localStorage.getItem(collection)) || []
-    let isValid = undefined
+  
+  const updateOne = (updateParams, data) => {
+  	dataCache = JSON.parse(localStorage.getItem(repo)) || []
+    let isValid
+    const id = updateParams.id || updateParams
     for (const i in dataCache) {
-      if (dataCache[i].id === id) {
-        Object.entries(data).forEach(([key, value]) => {
-          dataCache[i][key] = value
+    	if (dataCache[i].id === id) {
+      	Object.entries(data).forEach(([key, value]) => {
+        	dataCache[i][key] = value
         })
         dataCache[i].updatedAt = new Date()
         isValid = dataCache[i]
       }
     }
-    localStorage.setItem(collection, JSON.stringify(dataCache))
+    localStorage.setItem(repo, JSON.stringify(dataCache))
     return isValid
   }
-  function deleteOne (findParam) {
-    dataCache = JSON.parse(localStorage.getItem(collection)) || []
-    const id = typeof findParam === 'string' ? findParam : findParam.id
-    const newData = dataCache.filter(data => data.id !== id)
-    localStorage.setItem(collection, JSON.stringify(newData))
+  
+  const deleteOne = (deleteParams) => {
+  	dataCache = JSON.parse(localStorage.getItem(repo)) || []
+    const id = deleteParams.id || deleteParams
+    const filterData = dataCache.filter(data => data.id !== id)
+    localStorage.setItem(repo, JSON.stringify(filterData))
   }
-
-
-  return { insert, find, findOne, updateOne, deleteOne }
+  
+  return {
+  	insert,
+    find,
+    findOne,
+    updateOne,
+    deleteOne
+  }
 }

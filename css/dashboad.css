@@ -860,13 +860,15 @@ a.show-text:hover {
 }
 
 .main_list-container--content p {
+  inline-size: 400px;
+  height: 100%;
+  overflow-wrap: break-word;
   max-width: 400px;
-  word-break: break-all;
-  display: block;
   font-size: 0.9em;
   line-height: 2;
   color: #555;
   font-style: italic;
+  white-space: normal!important;
 }
 
 .close {
@@ -1047,7 +1049,7 @@ a.show-text:hover {
   height: 6px;
   border-radius: 6px;
   display: block;
-  background-color: var(--color-gray-highlight);
+  background: var(--color-gray-highlight);
 }
 
 .stats::before {
@@ -1055,7 +1057,7 @@ a.show-text:hover {
   width: var(--w);
   height: 100%;
   border-radius: 100px;
-  background-color: var(--color-primary);
+  background: linear-gradient(45deg, var(--color-primary), #B200FF);
   box-shadow: 0 4px 5px var(--color-primary-alpha);
   display: block;
   position: absolute;

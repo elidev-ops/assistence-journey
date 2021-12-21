@@ -18,9 +18,8 @@
         <textarea name="description" placeholder="Informação"></textarea>
       </div>
       <div class="input-box">
-        <select name="client">
-          <option value="" selected disabled>Selecione um cliente</option>
-        </select>
+        <input list="clients" name="client" placeholder="Digite o nome do cliente">
+        <datalist id="clients"></datalist>
       </div>
       <div class="hack">
         <button class="btn save" data-js="save"></button>

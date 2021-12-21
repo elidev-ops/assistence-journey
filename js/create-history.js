@@ -8,8 +8,8 @@ const now = new Date()
 
 export function updateHistory () {
   const clients = clientRepo.find(filterToDate)
-  const devices = deviceRepo.find(filterToDate, { status: 1 })
-  const lastMonth = deviceRepo.find(filterToLastDate, { status: 1 })
+  const devices = deviceRepo.find(filterToDate, { params: { status: 1 } })
+  const lastMonth = deviceRepo.find(filterToLastDate, { params: { status: 1 } })
   
   const income = devices.reduce(sumAmount, 0)
   const lastIncome = lastMonth.reduce(sumAmount, 0)
@@ -19,7 +19,7 @@ export function updateHistory () {
     if (date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear())
       return history
   }) || {}
-  
+ 
   const currentHistoryData = {
     date: null,
     totalClients: clients.length,
@@ -32,12 +32,12 @@ export function updateHistory () {
     income,
     clients,
     devices,
-    createdAt: new Date(),
     updatedAt: new Date()
   }
   
   
   if (!verifyObject(currentHistory)) {
+    currentHistoryData.createdAt = new Date()
     historyRepo.insert(currentHistoryData)
   }
   
@@ -75,4 +75,21 @@ function sumAmount (acc, cur) {
   return acc += +cur.amount
 }
 
+updateHistory.close = () => {
+  const historyOpen = historyRepo.findOne(history => {
+    const historyDate = createDate(history.createdAt)
+    const nowDate = createDate(new Date(now.getFullYear(), now.getMonth(), 0))
+    if (historyDate.getTime() < nowDate.getTime()) {
+      return history 
+    }
+  }, { params: { date: null } })
+  if (historyOpen) {
+    historyOpen.date = Intl.DateTimeFormat('pt-BR', { dateStyle: 'short' })
+      .format(new Date(now.getFullYear(), now.getMonth() + 1, 0))
+    historyOpen.updatedAt = new Date()
+    historyRepo.updateOne({ id: historyOpen.id }, historyOpen)
+  }
+}
+
+updateHistory.close()
 updateHistory()

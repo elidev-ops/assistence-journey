@@ -9,6 +9,7 @@ import { updateButton } from './update-button.js'
 import { deleteAndUpdate } from './delete-and-update.js'
 import { createHtmlClients } from './clients-page.js'
 import { convertToReal, shortUuidv4 } from './utils.js'
+import { updateHistory } from './create-history.js'
 import './create-history.js'
 
 sessionValidation()
@@ -91,7 +92,8 @@ function getPage(page) {
         sectionMainElm.innerHTML = await response.text()
         firstAppointment(devicesRepo)
         secondAppointment(devicesRepo)
-        const clientElm = document.querySelector('select[name="client"]')
+        const clientElm = document.querySelector('#clients')
+        console.log(clientElm)
         clientElm.innerHTML += clientsRepo.find()
           .sort((x, y) => {
             let a = x.name.toUpperCase(),
@@ -111,7 +113,6 @@ function getPage(page) {
         showClientContents(mainListContainer)
         mainListContainer.addEventListener('mousemove', mousemoveHandle)
         mainListContainer.addEventListener('click', e => {
-          const main = document.querySelector('.main')
           const clickedElement = e.target
 
           clickedElement.className === 'options' ? optionMenuHandle(clickedElement) : null
@@ -185,6 +186,7 @@ function getPage(page) {
               for (const data of deviceToUpdateStatus) {
                 const { id, status } = data
                 devicesRepo.updateOne({ id }, { status })
+                updateHistory()
               }
 
               const promise = new Promise(resolve => {

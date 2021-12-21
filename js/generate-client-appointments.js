@@ -51,8 +51,8 @@ export const secondAppointment = (repo) => {
 
   const percentDaily = isInt((devicesDaily.length * 100) / 1)
   const percentWeek = isInt((devicesWeek.length * 100) / 5)
-  const percentMonth = isInt((devicesMonth.length * 100) / date1.getDate())
-  const percentYear = isInt((devicesYear.length * 100) / 365)
+  const percentMonth = isInt((devicesMonth.length * 100) / (date1.getDate() / 5))
+  const percentYear = isInt((devicesYear.length * 100) / (365 / 5))
 
   const dailyHtml = /* html */ `
     <div class="container-box">
@@ -90,7 +90,7 @@ export const secondAppointment = (repo) => {
       <div class="container-box_content">
         <div class="container-box_content--header">
           <strong>Relatório mensal</strong>
-          ${createNormalBadge(`${devicesMonth.length} / ${(date1.getDate())}`)}
+          ${createNormalBadge(`${devicesMonth.length} / ${(date1.getDate() / 2)}`)}
         </div>
         <div style="--w: ${percentMonth}%;" class="stats" data-stats="${percentMonth}%"></div>
       </div>
@@ -104,7 +104,7 @@ export const secondAppointment = (repo) => {
       <div class="container-box_content">
         <div class="container-box_content--header">
           <strong>Relatório anual</strong>
-          ${createNormalBadge(`${devicesYear.length} / ${2 * 365}`)}
+          ${createNormalBadge(`${devicesYear.length} / ${(365 / 2) | 0}`)}
         </div>
         <div style="--w: ${percentYear}%;" class="stats" data-stats="${percentYear}%"></div>
       </div>

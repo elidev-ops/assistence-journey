@@ -29,7 +29,7 @@ const postRequest = (request) => ({
     data.employee = { name, surname, username }
     data.createdAt = new Date()
     data.updatedAt = new Date()
-    const exists = clientsRepo.findOne({ phone: data.phone })
+    const exists = clientsRepo.findOne({ params: { phone: data.phone } })
 
     if (!exists) {
       clientsRepo.insert(data)
@@ -44,7 +44,7 @@ const postRequest = (request) => ({
     const { name, surname, username } = account
     const clientsRepo = getCacheRepository('clients')
     const devicesRepo = getCacheRepository('devices')
-    const client = clientsRepo.findOne({ id: data.client })
+    const client = clientsRepo.findOne({ params: { id: data.client } })
     
     data.id = uuidv4()
     data.employee = { name, surname, username }
