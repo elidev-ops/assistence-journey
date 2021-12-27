@@ -10,9 +10,15 @@ export function updateHistory () {
   const clients = clientRepo.find(filterToDate)
   const devices = deviceRepo.find(filterToDate, { params: { status: 1 } })
   const lastMonth = deviceRepo.find(filterToLastDate, { params: { status: 1 } })
-  
+  const clientsLastMonth = clientRepo.find(filterToLastDate)
   const income = devices.reduce(sumAmount, 0)
   const lastIncome = lastMonth.reduce(sumAmount, 0)
+  const employeeAmount = Object.entries(devices.reduce((acc, { employee, amount }) => ({
+    ...acc,
+    [employee.username]: (acc[employee.username] || 0) + +amount })
+  ,{}))
+  const topEmployer = employeeAmount.reduce((prev, current) => 
+    prev[1] > current[1] ? prev : current)
   
   const { id, ...currentHistory } = historyRepo.findOne(history => {
     const date = new Date(history.createdAt)
@@ -22,20 +28,20 @@ export function updateHistory () {
  
   const currentHistoryData = {
     date: null,
-    totalClients: clients.length,
-    totalDevices: devices.length,
+    lastClients: clientsLastMonth.length,
+    lastDevices: lastMonth.length,
     mediaIncome: deviceRepo.find(filterToDate).reduce(sumAmount, 0),
     incomeDifference: {
-      value: income - lastIncome,
+      value: lastIncome,
       date: new Date()
     },
     income,
     clients,
     devices,
+    topEmployer,
     updatedAt: new Date()
   }
-  
-  
+
   if (!verifyObject(currentHistory)) {
     currentHistoryData.createdAt = new Date()
     historyRepo.insert(currentHistoryData)
@@ -49,7 +55,7 @@ function filterToDate (arr) {
 }
 
 function filterToLastDate (arr) {
-  if (compareDate(arr.updatedAt, { last: true })) return arr   
+  if (compareDate(arr.createdAt, { last: true })) return arr
 }
 
 function verifyObject (obj) {
@@ -67,8 +73,8 @@ function isDate (date) {
 function compareDate (date, { last } = false) {
   const objDate = createDate(date)
   const dateNow = createDate(new Date(
-    new Date().getFullYear(), last ? new Date().getMonth() - 1 : new Date().getMonth()))
-  return objDate.getTime() >= dateNow.getTime()
+    new Date().getFullYear(), new Date().getMonth(), last ? 0 : 1))
+  return last ? objDate.getTime() <= dateNow.getTime() : objDate.getTime() >= dateNow.getTime()
 }
 
 function sumAmount (acc, cur) {

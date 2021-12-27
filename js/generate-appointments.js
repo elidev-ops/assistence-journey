@@ -4,11 +4,10 @@ export const firstAppointment = (repo) => {
   const devicesBox =
     repo
       .find()
-      ?.reverse()
       ?.filter((_, index) => index <= 4)
       .reduce(
         (acc, cur) =>
-          (acc += `
+          (acc += /* html */ `
             <div class="client-box">
               <div class="appointment-icon">
                 <i class="bx bxs-user"></i>

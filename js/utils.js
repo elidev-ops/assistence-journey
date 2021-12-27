@@ -13,6 +13,9 @@ export const convertToReal = (value) => {
   return parseFloat(value).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })
 }
 
+export const simpleReal = (value) => 
+  Number.isInteger(value) ? value + ',00' : parseFloat(value).toLocaleString('pt-BR')
+
 export const shortUuidv4 = (value) => {
   return value.split('-')[0]
 }
@@ -33,14 +36,22 @@ export const createNumberWhatsapp = (number) => {
 export const createBadge = (data) => {
   const date = Intl.DateTimeFormat('pt-BR').format(new Date(data))
   const dateNow = Intl.DateTimeFormat('pt-BR').format(new Date())
-  return date === dateNow ? 
+  return date === dateNow ? /* html */
     `<span class="badge">
       Novo
     </span>`
     : ''
 }
 
-export const createNormalBadge = (value) => 
+export const createNormalBadge = (value) => /* html */
   `<span class="badge">
       ${value}
   </span>`
+
+export const percentageMonthlyGrowth = (current, last) => {
+  const amountChange = current - last
+  const measurement = amountChange / last
+  return `${Math.round(measurement * 100)}%`
+}
+
+export const simplePercent = (first, second) => `${Math.round((second * 100) / first)}%`

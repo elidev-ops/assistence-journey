@@ -115,7 +115,7 @@ option {
 .warning {
   --arrow: var(--color-warning);
   background-color: var(--color-warning);
-  color: var(--text-color-warning);
+  color: var(--text-color-warning)!important;
 }
 
 .error {

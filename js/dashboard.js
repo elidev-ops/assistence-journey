@@ -3,14 +3,16 @@ import logout from './logout.js'
 import { sessionValidation } from './session-validation.js'
 import { api } from './request.js'
 import { startStorage } from './post-request.js'
-import { firstAppointment, secondAppointment } from './generate-client-appointments.js'
+import { firstAppointment, secondAppointment } from './generate-appointments.js'
 import { createHtmlDevices } from './devices-page.js'
 import { updateButton } from './update-button.js'
 import { deleteAndUpdate } from './delete-and-update.js'
 import { createHtmlClients } from './clients-page.js'
-import { convertToReal, shortUuidv4 } from './utils.js'
 import { updateHistory } from './create-history.js'
+import { historyComponent } from './history-component.js'
 import './create-history.js'
+
+const { log } = console
 
 sessionValidation()
 document.cookie.split('; ')
@@ -19,6 +21,24 @@ const historyRepo = getCacheRepository('history')
 const accountsRepo = getCacheRepository('accounts')
 const clientsRepo = getCacheRepository('clients')
 const devicesRepo = getCacheRepository('devices')
+
+
+function backup () {
+  const backupData = {
+    history: historyRepo.find(),
+    accounts: accountsRepo.find(),
+    clients: clientsRepo.find(),
+    devices: devicesRepo.find(),
+  }
+  const blob = new Blob([
+    JSON.stringify(backupData)
+  ], { type: 'text/json' })
+  const a = document.createElementNS("http://www.w3.org/1999/xhtml", "a");
+  a.href = URL.createObjectURL(blob)
+  a.download = 'backup.json'
+  a.textContent = 'asdas'
+  document.body.appendChild(a)
+}
 
 const { company, username } = document.cookie.split(';').reduce((acc, cur) => ({
   ...acc, [cur.split('=')[0].trim()]: cur.split('=')[1].trim()
@@ -39,12 +59,12 @@ window.document.title = `Dashboard - ${company}`
 document.querySelector('[data-img]').src = `https://avatars.dicebear.com/api/adventurer-neutral/${username}.svg`
 profBtnElm.children[0].textContent = account.name
 
-const title = `
- <span class="highlight">${company.charAt(0)}</span>${company.slice(1)}
+const title = /* html */ `
+ <span class="highlight">D</span>ashboard
 `
 companyNameElm.innerHTML = title
 
-getPage('home')
+getPage('history')
 
 links.addEventListener('click', linkHandle, { capture: false })
 profBtnElm.addEventListener('click', profileHandle)
@@ -93,7 +113,6 @@ function getPage(page) {
         firstAppointment(devicesRepo)
         secondAppointment(devicesRepo)
         const clientElm = document.querySelector('#clients')
-        console.log(clientElm)
         clientElm.innerHTML += clientsRepo.find()
           .sort((x, y) => {
             let a = x.name.toUpperCase(),
@@ -221,39 +240,28 @@ function getPage(page) {
       const mainListContainer = document.querySelector('.main_list-container')
 
       const historyHtml = historyRepo.find()
-        .sort((x, y) => {
-          let a = new Date(x.createdAt).getTime(),
-            b = new Date(y.createdAt).getTime()
-          return a > b ? 0 : 1
-        })
-        .reduce((acc, cur, index, arr) => {
-        if (index === 0) {
-          acc += /* html */ `
-          <div class="history-container">
-            <div class="history-header">
-              <span>Id</span>
-              <span>Data</span>
-              <span>Status</span>
-              <span>Quantidade</span>
-              <span>Lucro</span>
-              <span>Opt</span>
-            </div>`
-        }
-        acc += /* html */ `
-        <div class="history-content ${cur.date ? 'closed' : 'open'}">
-          <span class="history-content_link">${shortUuidv4(cur.id)}</span>
-          <span>${cur.date ? cur.date : '----'}</span>
-          <span class="${cur.date ? 'closed' : 'open'}">${cur.date ? 'Fechado' : 'Aberto'}</span>
-          <span>${cur.totalDevices}</span>
-          <span>${!cur.date ? convertToReal(cur.income) + ' de ' + convertToReal(cur.mediaIncome) : convertToReal(cur.income)}</span>
-          <button class="close-history">
-            <i class='bx bxs-lock-open-alt'></i>
-          </button>
-        </div>`
-        if (arr.lastIndexOf(cur) === arr.length - 1) acc += `</div>`
-        return acc
-      }, '')
+        .reduce((acc, cur) => acc += historyComponent(cur), '')
+        
       mainListContainer.innerHTML = historyHtml
+      mainListContainer.addEventListener('click', e => {
+        if (e.target.dataset.toggleHistory) {
+          const clickedElementId = e.target.dataset.toggleHistory
+          const historyElm = document.querySelector(`[data-history-id="${clickedElementId}"]`)
+          historyElm.classList.toggle('open')
+        }
+        
+        const clickedContentElm = e.target.parentNode.nextElementSibling.querySelector('.data')
+        clickedContentElm?.addEventListener('click', e => {
+          const clickedElement = e.target.parentElement.parentElement
+          Array.from(clickedElement.parentElement.querySelectorAll('.data-container'))
+            .find(el => el.classList.contains('open'))
+            ?.classList.remove('open')
+          if (clickedElement.dataset.contentId) {
+            clickedElement.classList.add('open')
+          }
+          e.stopPropagation()
+        })
+      })
     }
   })[uri]
   second ? toPage(first)[second]() : toPage(first)()

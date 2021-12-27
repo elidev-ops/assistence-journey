@@ -3,7 +3,7 @@ import { createShortDate, createNumberWhatsapp, createDateBrazil, createBadge } 
 export function createHtmlClients (acc, cur, index, arr) {
   if (index === 0) acc += /* html */
     `<div class="main_list-container-block">
-      <div class="main_list-container--header">
+      <div class="main_list-container--header client">
         <span class="progress">Nome</span>
         <span>Data</span>
         <span>Email</span>
@@ -11,7 +11,7 @@ export function createHtmlClients (acc, cur, index, arr) {
         <span>Técnico</span>
         <span>OPT</span>
       </div>`
-  acc += /* html */ `<div class="main_list-container--box">
+  acc += /* html */ `<div class="main_list-container--box client">
     <div class="encapsulation">
       <span data-device-id="${cur.id}" class="encapsulation-title">${cur.name} ${cur.surname}</span>
       <div data-device-body="${cur.id}" class="main_list-container--content">

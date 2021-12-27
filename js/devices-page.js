@@ -22,6 +22,12 @@ function getStatusName (sts) {
   return status.find(obj => obj.status === sts)
 }
 
+function backwardnessControl (data) {
+  const limit = new Date(data.createdAt).getTime() + (24 * 60 * 60 * 1000)
+  const now = new Date().getTime()
+  return data.status <= 0 && limit < now ? true : false
+}
+
 export function createHtmlDevices (acc, cur, index, arr) {
   if (index === 0) acc += /* html */
     `<div class="main_list-container-block">
@@ -31,6 +37,7 @@ export function createHtmlDevices (acc, cur, index, arr) {
         <span>Status</span>
         <span>Cliente</span>
         <span>Técnico</span>
+        <span>OS</span>
         <span>OPT</span>
       </div>`
   acc += /* html */ `<div class="main_list-container--box device">
@@ -40,7 +47,7 @@ export function createHtmlDevices (acc, cur, index, arr) {
         <button data-close-id="${cur.id}" class="close">
           <i class='bx bx-plus'></i>
         </button>
-        <h2>${cur.brand} ${cur.model} ${createBadge(cur.createdAt)}</h2>
+        <h2>${cur.brand} ${cur.model} ${createBadge(cur.createdAt)} ${backwardnessControl(cur) ? '<span class="badge warning">Atrasado</span>' : '' }</h2>
         <span>Valor do serviço: ${convertToReal(cur.amount)}</span>
         <span>Local de armazenamento: ${cur.storeroom}</span>
         <details>
@@ -71,6 +78,11 @@ export function createHtmlDevices (acc, cur, index, arr) {
     <div class="encapsulation">
       <span class="show-text" data-text-view="1">${cur.employee.name}</span>
       <span class="hint">${cur.employee.name}</span>
+    </div>
+    <div class="encapsulation os">
+      <button class="btn-default sm">
+        <ion-icon name="document-sharp"></ion-icon>
+      </button>
     </div>
     <div class="encapsulation">
       <button class="options">

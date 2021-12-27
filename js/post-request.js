@@ -5,7 +5,7 @@ import { validationComposite, clientValidations, deviceValidations } from './val
 import { saveMessage } from './messages.js'
 import uuidv4 from './uuid.js'
 import { account } from './dashboard.js'
-import { firstAppointment, secondAppointment } from './generate-client-appointments.js'
+import { firstAppointment, secondAppointment } from './generate-appointments.js'
 import { updateHistory } from './create-history.js'
 let timeOut = null
 

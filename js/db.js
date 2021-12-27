@@ -34,7 +34,7 @@ export function getCacheRepository (repo) {
     return callback.order 
       ? orderBy(dataCache, callback.order) : order 
       ? orderBy(dataCache, order) : dataCache.sort((a, b) =>
-        new Date(a.createdAt).getTime() < new Date(b.createdAt).getTime())
+        new Date(a.updatedAt).getTime() < new Date(b.updatedAt).getTime())
   }
   
   const findOne = (callback, { params } = {}) => {
