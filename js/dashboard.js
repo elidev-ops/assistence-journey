@@ -246,25 +246,54 @@ function getPage(page) {
       mainListContainer.addEventListener('click', e => {
         if (e.target.dataset.toggleHistory) {
           const clickedElementId = e.target.dataset.toggleHistory
-          const historyElm = document.querySelector(`[data-history-id="${clickedElementId}"]`)
-          historyElm.classList.toggle('open')
+          const historyToBeOpened = document.querySelector(`[data-history-id="${clickedElementId}"]`)
+          const historyToBeClosed = Array
+            .from(document.querySelectorAll('[data-history-id]'))
+            .filter(historyElm => historyElm !== historyToBeOpened)
+            .find(historyElm => historyElm.classList.contains('open'))
+          
+          if (historyToBeClosed) historyToBeClosed.classList.remove('open')
+
+          historyToBeOpened.classList.toggle('open')
         }
         
-        const clickedContentElm = e.target.parentNode.nextElementSibling.querySelector('.data')
-        clickedContentElm?.addEventListener('click', e => {
-          const clickedElement = e.target.parentElement.parentElement
-          Array.from(clickedElement.parentElement.querySelectorAll('.data-container'))
-            .find(el => el.classList.contains('open'))
-            ?.classList.remove('open')
-          if (clickedElement.dataset.contentId) {
-            clickedElement.classList.add('open')
-          }
-          e.stopPropagation()
-        })
+        const clickedContentElm =
+          e.target.parentNode.nextElementSibling?.querySelector('[data-js="accordion"]')
+        clickedContentElm?.addEventListener('click', accordionHeaderClick)
       })
     }
   })[uri]
   second ? toPage(first)[second]() : toPage(first)()
+}
+
+function accordionHeaderClick(event) {
+  const accordionHeaderId = event.target.dataset.accordionHeader
+  if (accordionHeaderId) {
+    const clickedAccordionHeader =
+      document.querySelector(`[data-accordion-header="${accordionHeaderId}"]`)
+    const accordionItemToBeOpened =
+      document.querySelector(`[data-accordion-body="${accordionHeaderId}"]`)
+    const accordionHeaderToBeClosed = Array
+      .from(document.querySelectorAll('[data-js="accordion-header"]'))
+      .filter(accordionHeader => accordionHeader !== clickedAccordionHeader)
+      .find(accordionHeader => accordionHeader.classList.contains('open'))
+
+    if (accordionHeaderToBeClosed) {
+      closeAccordionItem(accordionHeaderToBeClosed)
+    }
+
+    clickedAccordionHeader.classList.toggle('open')
+    accordionItemToBeOpened.classList.toggle('open')
+  }
+}
+
+function closeAccordionItem(accordionHeaderToBeClosed) {
+  const accordionHeaderId = accordionHeaderToBeClosed.dataset.accordionHeader
+  const accordionBodyToBeClosed =
+    document.querySelector(`[data-accordion-body="${accordionHeaderId}"]`)
+
+  accordionBodyToBeClosed.classList.remove('open')
+  accordionHeaderToBeClosed.classList.remove('open')
 }
 
 function showDeviceContents(elm) {
@@ -339,3 +368,27 @@ function infoDataHandler(e) {
     behavior: 'smooth'
   })
 }
+
+function notify () {
+  const laggingDevices = devicesRepo.find(device => {
+    const devData = new Date(device.updatedAt)
+      .getTime() + (24 * 60 * 60 * 1000)
+    const now = new Date().getTime()
+    if (devData < now) return device
+  } ,{ params: { status: -1 } })
+  const notifyButton = document.querySelector('[data-js="notifications"]')
+
+  if (laggingDevices.length) notifyButton.classList.add('notify')
+  const notifyHtml = laggingDevices.reduce((acc, cur) => acc += /* html */ `
+    <span>
+      <i class='bx bxs-error'></i>
+      ${cur.model} está atrasado atenção!
+    </span>
+  `, '')
+  notifyButton.nextElementSibling.innerHTML = notifyHtml
+  notifyButton.addEventListener('click', () => {
+    notifyButton.nextElementSibling.classList.toggle('show')
+  })
+}
+
+notify()

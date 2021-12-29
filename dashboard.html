@@ -30,9 +30,25 @@
           <button class="icon">
             <i class='bx bxs-data'></i>
           </button>
-          <button class="icon">
-            <i class='bx bxs-bell'></i>
-          </button>
+          <div class="notify-wrapper">
+            <button data-js="notifications" class="icon">
+              <i class='bx bxs-bell'></i>
+            </button>
+            <div class="notify-container">
+              <span>
+                <i class='bx bxs-error'></i>
+                J5 já esta em atraso atenção!
+              </span>
+              <span>
+                <i class='bx bxs-error'></i>
+                J5 já esta em atraso atenção!
+              </span>
+              <span>
+                <i class='bx bx-cloud-download'></i>
+                <a href="#">Nova atualização do AJ disponível</a>
+              </span>
+            </div>
+          </div>
           <img data-img="profile" src="" alt="somethings">
           <button class="profile_name">
             <span>John Doe</span>
@@ -109,6 +125,9 @@
         <span>Powered by Elivelton S.</span>
       </footer>
     </main>
+    <div class="notify-device">
+      <span>Alguns dispositivos estão em atraso veja as notificações.</span>
+    </div>
   </div>
   <script type="module" src="js/dashboard.js"></script>
   <script type="module" src="js/devices-page.js"></script>

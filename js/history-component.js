@@ -92,24 +92,24 @@ export const historyComponent = (data) => /* html */ `
         </div>
       </div>
       <div class="history-data">
-        <div class="data">
-          <div class="data-container" data-content-id="${new Date(data.updatedAt).getTime()}">
-            <div class="data-header">
-            <span>
-              <i class="bx bx-user"></i>
-              ${createTopData(data.devices, 'client')[0]}
-            </span>
-            <span data-count="${data.clients?.length}">
-              <i class="bx bx-dollar"></i>
-              ${simpleReal(createTopData(data.devices, 'client')[1])}
-            </span>
-              <span class="untreading">
+        <div class="data" data-js="accordion">
+          <div class="data-container" data-js="accordion-header" data-accordion-header="${new Date(data.updatedAt).getTime() * 60}">
+            <button class="data-header" data-accordion-header="${new Date(data.updatedAt).getTime() * 60}">
+              <span data-accordion-header="${new Date(data.updatedAt).getTime() * 60}">
+                <i class="bx bx-user"></i>
+                ${createTopData(data.devices, 'client')[0]}
+              </span>
+              <span data-accordion-header="${new Date(data.updatedAt).getTime() * 60}" data-count="${data.clients?.length}">
+                <i class="bx bx-dollar"></i>
+                ${simpleReal(createTopData(data.devices, 'client')[1])}
+              </span>
+              <span data-accordion-header="${new Date(data.updatedAt).getTime() * 60}" class="untreading">
                 <i class="bx bxs-plus-circle"></i>
                 ${simplePercent(data.income, createTopData(data.devices, 'client')[1])}
                 <i class='bx bx-bar-chart'></i>
               </span>
-            </div>
-            <ul class="data-content">
+            </button>
+            <ul class="data-content" data-accordion-body="${new Date(data.updatedAt).getTime() * 60}">
               ${data.clients?.reduce((acc, cur) => acc += /* html */ `
                 <li>
                   <span><i class='bx bx-chevron-right'></i> ${cur.name} ${cur.surname}</span>
@@ -118,23 +118,23 @@ export const historyComponent = (data) => /* html */ `
               ` ,'')}
             </ul>
           </div>
-          <div class="data-container" data-content-id="${new Date(data.updatedAt).getTime()}">
-            <div class="data-header">
-              <span>
+          <div class="data-container" data-js="accordion-header" data-accordion-header="${Math.floor(new Date(data.updatedAt).getTime() / 60)}">
+            <button class="data-header" data-accordion-header="${Math.floor(new Date(data.updatedAt).getTime() / 60)}">
+              <span data-accordion-header="${Math.floor(new Date(data.updatedAt).getTime() / 60)}">
                 <i class="bx bx-devices"></i>
                 ${createTopData(data.devices, 'device')[0]}
               </span>
-              <span data-count="${data.devices?.length}">
+              <span data-accordion-header="${Math.floor(new Date(data.updatedAt).getTime() / 60)}" data-count="${data.devices?.length}">
                 <i class="bx bx-dollar"></i>
                 ${simpleReal(createTopData(data.devices, 'device')[1])}
               </span>
-              <span class="untreading">
+              <span data-accordion-header="${Math.floor(new Date(data.updatedAt).getTime() / 60)}" class="untreading">
                 <i class="bx bxs-plus-circle"></i>
                 ${simplePercent(data.income, createTopData(data.devices, 'device')[1])}
                 <i class='bx bx-bar-chart'></i>
               </span>
-            </div>
-            <ul class="data-content">
+            </button>
+            <ul class="data-content" data-accordion-body="${Math.floor(new Date(data.updatedAt).getTime() / 60)}">
               ${data.devices?.reduce((acc, cur) => acc += /* html */ `
                 <li>
                   <span><i class='bx bx-chevron-right'></i> ${cur.brand} ${cur.model}</span>
