@@ -6,6 +6,17 @@ import {
   simplePercent
 } from './utils.js'
 
+function hashCode (data) {
+  let hash = 0
+  for (let i = 0; i < data.length; i++) {
+    const character = data.charCodeAt(i)
+    hash = ((hash << 5) - hash) + character
+    hash = hash & hash
+  }
+  console.log(hash)
+  return hash
+}
+
 function createTopData (data = [], config) {
   const response = (config) => ({
     client: () => {
@@ -40,15 +51,19 @@ export const historyComponent = (data) => /* html */ `
       </div>
       <div class="history-header__info">
         <i class='bx bx-devices' ></i>
-        <span>${data.totalDevices} Dispositivos</span>
+        <span>${data?.devices?.length || data.totalDevices} Dispositivos</span>
       </div>
       <div class="history-header__info">
         <i class='bx bx-user' ></i>
-        <span>${data.totalClients} Clientes</span>
+        <span>${data?.clients?.length || data.totalClients} Clientes</span>
       </div>
       <div class="history-header__info">
         <span class="small">$</span>
-        <span>${data.income === data.mediaIncome ? simpleReal(data.income) : simpleReal(data.income) + ' - ' + simpleReal(data.mediaIncome)}</span>
+        <span>${
+          data.income === data.mediaIncome || data.mediaIncome === 0 ? 
+            simpleReal(data.income) : 
+            simpleReal(data.income) + ' - ' + simpleReal(data.mediaIncome)}
+        </span>
       </div>
       <button class="btn-default" data-toggle-history="${data.id}"></button>
     </div>
@@ -93,23 +108,23 @@ export const historyComponent = (data) => /* html */ `
       </div>
       <div class="history-data">
         <div class="data" data-js="accordion">
-          <div class="data-container" data-js="accordion-header" data-accordion-header="${new Date(data.updatedAt).getTime() * 60}">
-            <button class="data-header" data-accordion-header="${new Date(data.updatedAt).getTime() * 60}">
-              <span data-accordion-header="${new Date(data.updatedAt).getTime() * 60}">
+          <div class="data-container" data-js="accordion-header" data-accordion-header="${hashCode(JSON.stringify(data) + 'client')}">
+            <button class="data-header" data-accordion-header="${hashCode(JSON.stringify(data) + 'client')}">
+              <span data-accordion-header="${hashCode(JSON.stringify(data))}">
                 <i class="bx bx-user"></i>
                 ${createTopData(data.devices, 'client')[0]}
               </span>
-              <span data-accordion-header="${new Date(data.updatedAt).getTime() * 60}" data-count="${data.clients?.length}">
+              <span data-accordion-header="${hashCode(JSON.stringify(data) + 'client')}" data-count="${data.clients?.length}">
                 <i class="bx bx-dollar"></i>
                 ${simpleReal(createTopData(data.devices, 'client')[1])}
               </span>
-              <span data-accordion-header="${new Date(data.updatedAt).getTime() * 60}" class="untreading">
+              <span data-accordion-header="${hashCode(JSON.stringify(data) + 'client')}" class="untreading">
                 <i class="bx bxs-plus-circle"></i>
                 ${simplePercent(data.income, createTopData(data.devices, 'client')[1])}
                 <i class='bx bx-bar-chart'></i>
               </span>
             </button>
-            <ul class="data-content" data-accordion-body="${new Date(data.updatedAt).getTime() * 60}">
+            <ul class="data-content" data-accordion-body="${hashCode(JSON.stringify(data) + 'client')}">
               ${data.clients?.reduce((acc, cur) => acc += /* html */ `
                 <li>
                   <span><i class='bx bx-chevron-right'></i> ${cur.name} ${cur.surname}</span>
@@ -118,23 +133,23 @@ export const historyComponent = (data) => /* html */ `
               ` ,'')}
             </ul>
           </div>
-          <div class="data-container" data-js="accordion-header" data-accordion-header="${Math.floor(new Date(data.updatedAt).getTime() / 60)}">
-            <button class="data-header" data-accordion-header="${Math.floor(new Date(data.updatedAt).getTime() / 60)}">
-              <span data-accordion-header="${Math.floor(new Date(data.updatedAt).getTime() / 60)}">
+          <div class="data-container" data-js="accordion-header" data-accordion-header="${hashCode(JSON.stringify(data) + 'device')}">
+            <button class="data-header" data-accordion-header="${hashCode(JSON.stringify(data) + 'device')}">
+              <span data-accordion-header="${hashCode(JSON.stringify(data) + 'device')}">
                 <i class="bx bx-devices"></i>
                 ${createTopData(data.devices, 'device')[0]}
               </span>
-              <span data-accordion-header="${Math.floor(new Date(data.updatedAt).getTime() / 60)}" data-count="${data.devices?.length}">
+              <span data-accordion-header="${hashCode(JSON.stringify(data) + 'device')}" data-count="${data.devices?.length}">
                 <i class="bx bx-dollar"></i>
                 ${simpleReal(createTopData(data.devices, 'device')[1])}
               </span>
-              <span data-accordion-header="${Math.floor(new Date(data.updatedAt).getTime() / 60)}" class="untreading">
+              <span data-accordion-header="${hashCode(JSON.stringify(data) + 'device')}" class="untreading">
                 <i class="bx bxs-plus-circle"></i>
                 ${simplePercent(data.income, createTopData(data.devices, 'device')[1])}
                 <i class='bx bx-bar-chart'></i>
               </span>
             </button>
-            <ul class="data-content" data-accordion-body="${Math.floor(new Date(data.updatedAt).getTime() / 60)}">
+            <ul class="data-content" data-accordion-body="${hashCode(JSON.stringify(data) + 'device')}">
               ${data.devices?.reduce((acc, cur) => acc += /* html */ `
                 <li>
                   <span><i class='bx bx-chevron-right'></i> ${cur.brand} ${cur.model}</span>

@@ -23,7 +23,7 @@ function getStatusName (sts) {
 }
 
 function backwardnessControl (data) {
-  const limit = new Date(data.createdAt).getTime() + (24 * 60 * 60 * 1000)
+  const limit = new Date(data.updatedAt).getTime() + (24 * 60 * 60 * 1000)
   const now = new Date().getTime()
   return data.status <= 0 && limit < now ? true : false
 }

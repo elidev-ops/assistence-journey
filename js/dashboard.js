@@ -285,6 +285,7 @@ function accordionHeaderClick(event) {
     clickedAccordionHeader.classList.toggle('open')
     accordionItemToBeOpened.classList.toggle('open')
   }
+  event.stopPropagation()
 }
 
 function closeAccordionItem(accordionHeaderToBeClosed) {

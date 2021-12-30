@@ -42,6 +42,43 @@ export function updateHistory () {
     updatedAt: new Date()
   }
 
+  const lastDevicesData = deviceRepo.find(d => {
+    const device = new Date(d.createdAt).getTime()
+    const initial = new Date(2021, 10, 1).getTime()
+    const end = new Date(2021, 11, 0).getTime()
+    if (device > initial && device < end) return d
+  })
+
+  const lastClientsData = clientRepo.find(d => {
+    const client = new Date(d.createdAt).getTime()
+    const initial = new Date(2021, 10, 1).getTime()
+    const end = new Date(2021, 11, 0).getTime()
+    if (client > initial && client < end) return d
+  })
+
+  // const lastHistoryData = {
+  //   date: Intl.DateTimeFormat('pt-BR', { dateStyle: 'short' }).format(new Date(2021, 11, 0)),
+  //   lastClients: 0,
+  //   lastDevices: 0,
+  //   mediaIncome: 0,
+  //   incomeDifference: {
+  //     value: 0,
+  //     date: new Date(2021, 11, 0)
+  //   },
+  //   income: lastDevicesData.reduce(sumAmount, 0),
+  //   clients: lastClientsData,
+  //   devices: lastDevicesData,
+  //   topEmployer: Object.entries(lastDevicesData.reduce((acc, { employee, amount }) => ({
+  //     ...acc,
+  //     [employee.username]: (acc[employee.username] || 0) + +amount })
+  //   ,{})).reduce((prev, current) => 
+  //   prev[1] > current[1] ? prev : current),
+  //   createdAt: new Date(2021, 10, 1),
+  //   updatedAt: new Date(2021, 10, 0)
+  // }
+
+  // historyRepo.updateOne({id:"a729ec98-e561-46cc-808b-0f08b07affa2"}, lastHistoryData)
+
   if (!verifyObject(currentHistory)) {
     currentHistoryData.createdAt = new Date()
     historyRepo.insert(currentHistoryData)
