@@ -13,7 +13,6 @@ function hashCode (data) {
     hash = ((hash << 5) - hash) + character
     hash = hash & hash
   }
-  console.log(hash)
   return hash
 }
 

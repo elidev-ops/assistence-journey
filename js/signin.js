@@ -9,32 +9,90 @@ sessionValidation()
 
 const root = document.querySelector('.root')
 const formElm = document.querySelector('[data-js="form"]')
+const loginContainerH1 = document.querySelector('.login-container h1')
+const logeddinElm = document.querySelector('[data-js="logeddin"]')
 
 const accountsRepo = getCacheRepository('accounts')
 
+const logeddin = JSON.parse(localStorage.getItem('logeddin')) || []
+const usersHtml = logeddin
+  .filter(user => user.logeddin)
+  .reduce((acc, cur) => acc += /* html */ `
+    <button data-logeddin-username="${cur.username}" class="logeddin-btn">
+      <span class="close-logeddin" data-logeddin-username="${cur.username}">x</span>
+      ${atFirst(cur.name)}
+    </button>`, '')
+logeddinElm.innerHTML = usersHtml
+
+logeddinElm.addEventListener('click', event => {
+  const clickedElm = event.target
+  if (clickedElm.dataset.logeddinUsername) {
+    const username = clickedElm.dataset.logeddinUsername
+
+    if (clickedElm.tagName === 'SPAN') {
+      removeRememberMe(username)
+      window.location.reload()
+    }
+
+    loginContainerH1.innerHTML = `Bem vindo de volta ${username}`
+
+    formElm.innerHTML = /* html */ `
+      <div class="input-box">
+        <input type="hidden" name="username" value="${username}">
+      </div>
+      <div class="input-box">
+        <input type="password" name="password" placeholder="Senha">
+      </div>
+      <button class="btn" data-js="signin">
+        <span>Entrar</span>
+      </button>
+    `
+  }
+  event.stopPropagation()
+})
+
 formElm.addEventListener('submit', signInHandle)
 
-function signInHandle (event) {
+async function signInHandle(event) {
   event.preventDefault()
 
   const objectData = createData(event.target)
   const err = validationComposite(signinValidations(objectData))
-  
+
+
   if (err) {
     executeError(err)
     return
   }
 
-  sendRequest(objectData)
+  const response = await sendRequest(objectData)
+
+  const logeddin = JSON.parse(localStorage.getItem('logeddin')) || []
+  const filterUser = logeddin.filter(user => user.username !== response)
+  localStorage.setItem('logeddin', JSON.stringify([
+    ...filterUser,
+    { username: response[0], name: response[1],  logeddin: event.target['rememberMe'].checked }
+  ]))
 }
 
-async function sendRequest (data) {
-  console.log(data)
+function removeRememberMe (username) {
+  document.querySelector(`[data-logeddin-username="${username}"]`).remove()
+  const logeddin = JSON.parse(localStorage.getItem('logeddin')) || []
+  const filterUser = logeddin.filter(user => user.username !== username)
+  localStorage.setItem('logeddin', JSON.stringify(filterUser))
+}
+
+function atFirst (name) {
+  const arr = name.split(' ')
+  return arr[0].charAt(0) + arr[1].charAt(0)
+}
+
+async function sendRequest(data) {
   const isValid = accountsRepo.find()
     .find(account => account.username === data.username && account.password === data.password)
-  
+
   if (!isValid) {
-    executeError(new CustomError('Usuario ou senha estão errado.', 'username'))
+    executeError(new CustomError('Usuário ou senha estão errado.', 'username'))
     return
   }
   let previousContext = null
@@ -66,4 +124,5 @@ async function sendRequest (data) {
   const dateCookie = Intl.DateTimeFormat('en-GB', { dateStyle: 'short' }).format(date)
   document.cookie = `username=${isValid.username}; expires=Thu; ${dateCookie}; path=/;`
   document.cookie = `company=${isValid.company}; expires=Thu; ${dateCookie}; path=/;`
+  return [isValid.username, isValid.name]
 }

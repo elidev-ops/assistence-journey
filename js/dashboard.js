@@ -379,7 +379,10 @@ function notify () {
   } ,{ params: { status: -1 } })
   const notifyButton = document.querySelector('[data-js="notifications"]')
 
-  if (laggingDevices.length) notifyButton.classList.add('notify')
+  if (laggingDevices.length) {
+    notifyButton.classList.add('notify')
+    notifyButton.dataset.notifyCount = laggingDevices.length
+  }
   const notifyHtml = laggingDevices.reduce((acc, cur) => acc += /* html */ `
     <span>
       <i class='bx bxs-error'></i>

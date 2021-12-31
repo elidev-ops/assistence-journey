@@ -42,22 +42,22 @@ export function updateHistory () {
     updatedAt: new Date()
   }
 
-  const lastDevicesData = deviceRepo.find(d => {
-    const device = new Date(d.createdAt).getTime()
-    const initial = new Date(2021, 10, 1).getTime()
-    const end = new Date(2021, 11, 0).getTime()
-    if (device > initial && device < end) return d
-  })
+  // const lastDevicesData = deviceRepo.find(d => {
+  //   const device = new Date(d.updatedAt).getTime()
+  //   const initial = new Date(2021, 10, 1).getTime()
+  //   const end = new Date(2021, 11, 0).getTime()
+  //   if (device > initial && device < end) return d
+  // })
 
-  const lastClientsData = clientRepo.find(d => {
-    const client = new Date(d.createdAt).getTime()
-    const initial = new Date(2021, 10, 1).getTime()
-    const end = new Date(2021, 11, 0).getTime()
-    if (client > initial && client < end) return d
-  })
+  // const lastClientsData = clientRepo.find(d => {
+  //   const client = new Date(d.updatedAt).getTime()
+  //   const initial = new Date(2021, 10, 1).getTime()
+  //   const end = new Date(2021, 11, 0).getTime()
+  //   if (client > initial && client < end) return d
+  // })
 
   // const lastHistoryData = {
-  //   date: Intl.DateTimeFormat('pt-BR', { dateStyle: 'short' }).format(new Date(2021, 11, 0)),
+  //   date: Intl.DateTimeFormat('pt-BR', { dateStyle: 'short' }).format(new Date(2021, 11, 1)),
   //   lastClients: 0,
   //   lastDevices: 0,
   //   mediaIncome: 0,
@@ -74,10 +74,10 @@ export function updateHistory () {
   //   ,{})).reduce((prev, current) => 
   //   prev[1] > current[1] ? prev : current),
   //   createdAt: new Date(2021, 10, 1),
-  //   updatedAt: new Date(2021, 10, 0)
+  //   updatedAt: new Date(2021, 11, 1)
   // }
 
-  // historyRepo.updateOne({id:"a729ec98-e561-46cc-808b-0f08b07affa2"}, lastHistoryData)
+  // historyRepo.insert(lastHistoryData)
 
   if (!verifyObject(currentHistory)) {
     currentHistoryData.createdAt = new Date()
@@ -92,7 +92,7 @@ function filterToDate (arr) {
 }
 
 function filterToLastDate (arr) {
-  if (compareDate(arr.createdAt, { last: true })) return arr
+  if (compareDate(arr.updatedAt, { last: true })) return arr
 }
 
 function verifyObject (obj) {
@@ -126,6 +126,7 @@ updateHistory.close = () => {
       return history 
     }
   }, { params: { date: null } })
+
   if (historyOpen) {
     historyOpen.date = Intl.DateTimeFormat('pt-BR', { dateStyle: 'short' })
       .format(new Date(now.getFullYear(), now.getMonth() + 1, 0))

@@ -37,12 +37,12 @@ export function getCacheRepository (repo) {
         new Date(a.updatedAt).getTime() < new Date(b.updatedAt).getTime())
   }
   
-  const findOne = (callback, { params } = {}) => {
+  const findOne = (callback = {}, { params } = {}) => {
   	dataCache = JSON.parse(localStorage.getItem(repo)) || []
     const [key, value] = Object.entries(
       callback.params ? callback.params : params || {})[0] || []
     if (typeof callback && callback instanceof Function) {
-      return dataCache.find(callback)
+      dataCache =  dataCache.filter(callback)
     }
     dataCache = dataCache.find(data => data[key] === value)
     return callback || params ? dataCache : {}

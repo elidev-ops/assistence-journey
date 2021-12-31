@@ -160,6 +160,108 @@ option {
   font-weight: 600;
 }
 
+.checkbox {
+  padding: 1em 0;
+  display: block;
+}
+
+.checkbox input {
+  display: none;
+}
+
+.checkbox .checkbox-title {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.checkbox .checkbox-title::before {
+  content: '';
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  display: block;
+  margin-right: 4px;
+  border: 2px solid var(--color-border);
+}
+
+.checkbox .checkbox-title:hover::before {
+  border-color: #aaa;
+}
+
+.checkbox .checkbox-title::after {
+  content: '';
+  width: 9px;
+  height: 5px;
+  border-left: 2px solid var(--bg-primary);
+  border-bottom: 2px solid var(--bg-primary);
+  transform: rotate(-45deg) translate3d(3px, 1px, 0);
+  position: absolute;
+  left: 0;
+  display: none;
+}
+
+.checkbox input:checked ~ .checkbox-title::after {
+  display: block;
+}
+
+.checkbox input:checked ~ .checkbox-title::before {
+  border-color: transparent;
+  background-color: var(--color-primary);
+}
+
+.logeddin {
+  position: fixed;
+  top: 50px;
+  left: 50px;
+
+  z-index: 9999;
+}
+
+.logeddin-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 64px;
+  display: block;
+  color: #fff;
+  font-size: 32px;
+  font-weight: 200!important;
+  position: relative;
+}
+
+.logeddin-btn::after {
+  display: inline-block;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  box-sizing: border-box;
+  background-image: linear-gradient(312deg,#8e9eab,#eef2f3 100%);
+  -webkit-clip-path: url(#class11-clip);
+  clip-path: url(#class11-clip);
+}
+
+.logeddin-btn:hover > .close-logeddin {
+  display: flex;
+}
+
+.close-logeddin {
+  width: 32px;
+  height: 32px;
+  display: none;
+  align-items: flex-start;
+  justify-content: flex-end;
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 18px;
+}
+
 @keyframes rotate {
   to {
     transform: rotate(360deg);
