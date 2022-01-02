@@ -1724,6 +1724,60 @@ a.show-text:hover {
   margin-top: 8px;
 }
 
+.notify-alert {
+  z-index: 9999;
+  position: absolute;
+  top: 10%;
+  right: 0;
+  display: flex;
+  align-items: flex-start;
+  width: max-content;
+  background-color: #fff;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .1), 0 2px 5px rgba(0, 0, 0, .1);
+  opacity: 0;
+  animation: showAlert 400ms ease-in-out forwards;
+}
+
+.notify-alert > i {
+  margin-right: 12px;
+  font-size: 24px;
+  color: #f54f4e;
+  border-radius: 100px;
+}
+
+.notify-alert span {
+  font-size: 16px;
+}
+
+.notify-alert_text {
+  font-weight: 500;
+  display: flex;
+  color: #42526e;
+  flex-direction: column;
+  margin-right: 32px;
+}
+
+.notify-alert_text > span {
+  color: #f54f4e;
+  font-weight: 600;
+}
+
+.notify-alert_button {
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  background: none;
+  border: none;
+  font-size: 24px;
+}
+
+.notify-alert_button i {
+  align-self: flex-start;
+  color: #9e9ea7;
+}
+
 
 @keyframes loading_v2 {
   0%,
@@ -1798,5 +1852,12 @@ a.show-text:hover {
 @keyframes rotationAnim {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes showAlert {
+  to {
+    opacity: 1;
+    transform: translateX(-50px);
   }
 }

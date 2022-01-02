@@ -50,11 +50,11 @@ export const historyComponent = (data) => /* html */ `
       </div>
       <div class="history-header__info">
         <i class='bx bx-devices' ></i>
-        <span>${data?.devices?.length || data.totalDevices} Dispositivos</span>
+        <span>${data.devices.length} Dispositivos</span>
       </div>
       <div class="history-header__info">
         <i class='bx bx-user' ></i>
-        <span>${data?.clients?.length || data.totalClients} Clientes</span>
+        <span>${data.clients.length } Clientes</span>
       </div>
       <div class="history-header__info">
         <span class="small">$</span>
@@ -107,32 +107,34 @@ export const historyComponent = (data) => /* html */ `
       </div>
       <div class="history-data">
         <div class="data" data-js="accordion">
-          <div class="data-container" data-js="accordion-header" data-accordion-header="${hashCode(JSON.stringify(data) + 'client')}">
-            <button class="data-header" data-accordion-header="${hashCode(JSON.stringify(data) + 'client')}">
-              <span data-accordion-header="${hashCode(JSON.stringify(data))}">
-                <i class="bx bx-user"></i>
-                ${createTopData(data.devices, 'client')[0]}
-              </span>
-              <span data-accordion-header="${hashCode(JSON.stringify(data) + 'client')}" data-count="${data.clients?.length}">
-                <i class="bx bx-dollar"></i>
-                ${simpleReal(createTopData(data.devices, 'client')[1])}
-              </span>
-              <span data-accordion-header="${hashCode(JSON.stringify(data) + 'client')}" class="untreading">
-                <i class="bx bxs-plus-circle"></i>
-                ${simplePercent(data.income, createTopData(data.devices, 'client')[1])}
-                <i class='bx bx-bar-chart'></i>
-              </span>
-            </button>
-            <ul class="data-content" data-accordion-body="${hashCode(JSON.stringify(data) + 'client')}">
-              ${data.clients?.reduce((acc, cur) => acc += /* html */ `
-                <li>
-                  <span><i class='bx bx-chevron-right'></i> ${cur.name} ${cur.surname}</span>
-                  <span>Whatsapp: ${cur.phone}</span>
-                </li>
-              ` ,'')}
-            </ul>
-          </div>
-          <div class="data-container" data-js="accordion-header" data-accordion-header="${hashCode(JSON.stringify(data) + 'device')}">
+          ${data.clients.length ? /* html */ `
+            <div class="data-container" data-js="accordion-header" data-accordion-header="${hashCode(JSON.stringify(data) + 'client')}">
+              <button class="data-header" data-accordion-header="${hashCode(JSON.stringify(data) + 'client')}">
+                <span data-accordion-header="${hashCode(JSON.stringify(data))}">
+                  <i class="bx bx-user"></i>
+                  ${createTopData(data.devices, 'client')[0]}
+                </span>
+                <span data-accordion-header="${hashCode(JSON.stringify(data) + 'client')}" data-count="${data.clients?.length}">
+                  <i class="bx bx-dollar"></i>
+                  ${simpleReal(createTopData(data.devices, 'client')[1] || 0)}
+                </span>
+                <span data-accordion-header="${hashCode(JSON.stringify(data) + 'client')}" class="untreading">
+                  <i class="bx bxs-plus-circle"></i>
+                  ${simplePercent(data.income, createTopData(data.devices, 'client')[1] || 0)}
+                  <i class='bx bx-bar-chart'></i>
+                </span>
+              </button>
+              <ul class="data-content" data-accordion-body="${hashCode(JSON.stringify(data) + 'client')}">
+                ${data.clients?.reduce((acc, cur) => acc += /* html */ `
+                  <li>
+                    <span><i class='bx bx-chevron-right'></i> ${cur.name} ${cur.surname}</span>
+                    <span>Whatsapp: ${cur.phone}</span>
+                  </li>
+                ` ,'')}
+              </ul>
+            </div>` : ''}
+          ${data.devices.length ? /* html */ `
+            <div class="data-container" data-js="accordion-header" data-accordion-header="${hashCode(JSON.stringify(data) + 'device')}">
             <button class="data-header" data-accordion-header="${hashCode(JSON.stringify(data) + 'device')}">
               <span data-accordion-header="${hashCode(JSON.stringify(data) + 'device')}">
                 <i class="bx bx-devices"></i>
@@ -140,11 +142,11 @@ export const historyComponent = (data) => /* html */ `
               </span>
               <span data-accordion-header="${hashCode(JSON.stringify(data) + 'device')}" data-count="${data.devices?.length}">
                 <i class="bx bx-dollar"></i>
-                ${simpleReal(createTopData(data.devices, 'device')[1])}
+                ${simpleReal(createTopData(data.devices, 'device')[1] || 0)}
               </span>
               <span data-accordion-header="${hashCode(JSON.stringify(data) + 'device')}" class="untreading">
                 <i class="bx bxs-plus-circle"></i>
-                ${simplePercent(data.income, createTopData(data.devices, 'device')[1])}
+                ${simplePercent(data.income, createTopData(data.devices, 'device')[1] || 0)}
                 <i class='bx bx-bar-chart'></i>
               </span>
             </button>
@@ -156,18 +158,19 @@ export const historyComponent = (data) => /* html */ `
                 </li>
               ` ,'')}
             </ul>
-          </div>
+          </div>` : ''}
         </div>
-        <div class="uptrend">
-          <div class="uptrend-title">
-            <h3>${data?.topEmployer?.[0]}</h3>
-            <span>Alto indice</span>
-          </div>
-          <div class="uptrend-level win">
-            <span>${percentageMonthlyGrowth(data?.topEmployer?.[1], data.income)}</span>
-            <i class='bx bx-trending-up' ></i>
-          </div>
-        </div>
+        ${data.topEmployer.length ? /* html */ `
+          <div class="uptrend">
+            <div class="uptrend-title">
+              <h3>${data?.topEmployer?.[0]}</h3>
+              <span>Alto índice</span>
+            </div>
+            <div class="uptrend-level win">
+              <span>${percentageMonthlyGrowth(data?.topEmployer?.[1], data.income)}</span>
+              <i class='bx bx-trending-up' ></i>
+            </div>
+          </div>`: ''}
       </div>
     </div>
   </div>

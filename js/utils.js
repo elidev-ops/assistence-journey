@@ -51,7 +51,7 @@ export const createNormalBadge = (value) => /* html */
 export const percentageMonthlyGrowth = (current, last) => {
   const amountChange = current - last
   const measurement = amountChange / last
-  return `${Math.round((Number.isFinite(measurement) ? measurement : 0) * 100)}%`
+  return `${Math.ceil((Number.isFinite(measurement) ? measurement : 0) * 100)}%`
 }
 
-export const simplePercent = (first, second) => `${Math.round((second * 100) / first)}%`
+export const simplePercent = (first, second) => `${Math.round((second * 100) / first) || 0}%`

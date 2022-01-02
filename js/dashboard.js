@@ -24,6 +24,7 @@ const devicesRepo = getCacheRepository('devices')
 
 
 function backup () {
+  const backupButtonElm = document.querySelector('[data-js="backup"]')
   const backupData = {
     history: historyRepo.find(),
     accounts: accountsRepo.find(),
@@ -32,12 +33,11 @@ function backup () {
   }
   const blob = new Blob([
     JSON.stringify(backupData)
-  ], { type: 'text/json' })
-  const a = document.createElementNS("http://www.w3.org/1999/xhtml", "a");
-  a.href = URL.createObjectURL(blob)
-  a.download = 'backup.json'
-  a.textContent = 'asdas'
-  document.body.appendChild(a)
+  ], { type: 'application/json' })
+
+  backupButtonElm.onclick = () => {
+    window.open(URL.createObjectURL(blob))
+  }
 }
 
 const { company, username } = document.cookie.split(';').reduce((acc, cur) => ({
@@ -46,6 +46,7 @@ const { company, username } = document.cookie.split(';').reduce((acc, cur) => ({
 
 export const account = accountsRepo.findOne({ username })
 
+const root = document.querySelector('#root')
 const links = document.querySelector('.links')
 const profBtnElm = document.querySelector('.profile_name')
 const companyNameElm = document.querySelector('.company_name')
@@ -370,7 +371,7 @@ function infoDataHandler(e) {
   })
 }
 
-function notify () {
+async function notify () {
   const laggingDevices = devicesRepo.find(device => {
     const devData = new Date(device.updatedAt)
       .getTime() + (24 * 60 * 60 * 1000)
@@ -389,10 +390,42 @@ function notify () {
       ${cur.model} está atrasado atenção!
     </span>
   `, '')
-  notifyButton.nextElementSibling.innerHTML = notifyHtml
+  console.log(notifyHtml)
+  notifyButton.nextElementSibling.innerHTML = notifyHtml || '<span>Sem notificações!</span>'
   notifyButton.addEventListener('click', () => {
     notifyButton.nextElementSibling.classList.toggle('show')
   })
+  if (laggingDevices.length) {
+    setInterval(async () => {
+      for (const device of laggingDevices) {
+        const notifyHtml = /* html */ `
+          <div data-notify-id="${device.id}" class="notify-alert">
+            <i class='bx bxs-error'></i>
+            <span class="notify-alert_text">
+              Produto em atraso
+              <span>${device.brand} ${device.model}</span>
+            </span>
+            <button data-close-notify="${device.id}" class="notify-alert_button">
+              <i class='bx bx-x'></i>
+            </button>
+          </div>
+        `
+        root.insertAdjacentHTML('afterbegin', notifyHtml)
+        document.querySelector('[data-close-notify]')
+          .addEventListener('click', function() {
+            this.offsetParent.remove()
+          })
+        const removeAlertAuto = new Promise(resolve => {
+          setTimeout(() => {
+            document.querySelector(`[data-notify-id="${device.id}"]`)?.remove()
+            resolve()
+          }, 5000)
+        })
+        await removeAlertAuto
+      }
+    }, 5000)
+  }
 }
 
 notify()
+backup()
