@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign-in</title>
   <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+  <link rel="stylesheet" href="css/root.css">
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/elements.css">
   <link rel="stylesheet" href="css/main.css">
@@ -57,7 +58,7 @@
   </style>
 </head>
 <body>
-  <div class="root">
+  <div id="root" class="root">
     <div class="bg-animated">
       <img src="assets/bg.png" class="bg">
       <img src="assets/moon.png" class="moon">
@@ -99,6 +100,7 @@
       </clipPath>
     </defs>
   </svg>
+  <script src="js/preloader.js"></script>
   <script type="module" src="js/signin.js"></script>
   <script>
     const moon = document.querySelector('.moon')

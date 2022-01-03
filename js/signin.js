@@ -47,6 +47,8 @@ logeddinElm.addEventListener('click', event => {
         <span>Entrar</span>
       </button>
     `
+
+    document.querySelector('input[type="password"]').focus()
   }
   event.stopPropagation()
 })

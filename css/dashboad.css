@@ -587,6 +587,10 @@ details > span:last-of-type:after {
   padding: 0 1em;
 }
 
+.sm > * {
+  pointer-events: none;
+}
+
 .sm:hover {
   background-color: var(--color-primary);
   color: var(--bg-primary);
@@ -1778,6 +1782,72 @@ a.show-text:hover {
   color: #9e9ea7;
 }
 
+.card-os {
+  background-color: var(--bg-primary);
+  padding: 30px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  z-index: 9999;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, .1);
+  animation: showModal 200ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.card-os.show {
+  display: block;
+}
+
+.card-os h2 {
+  margin-bottom: 14px;
+}
+
+.card-os .btn-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  display: block;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 24px;
+  color: var(--color-gray);
+  transition: all 600ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.card-os .btn-close i {
+  pointer-events: none;
+}
+
+.card-os .btn-close:hover {
+  color: var(--color-active);
+}
+
+.card-os_footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.card-os_footer--btn {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  padding: 0 24px;
+  line-height: 34px;
+  border-radius: 100px;
+  font-weight: 600;
+  font-size: 12px;
+  transition: all 600ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.card-os_footer--btn:hover {
+  transform: scale(1.1);
+  background-color: var(--color-primary);
+  color: var(--bg-primary);
+}
 
 @keyframes loading_v2 {
   0%,

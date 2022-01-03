@@ -80,9 +80,21 @@ export function createHtmlDevices (acc, cur, index, arr) {
       <span class="hint">${cur.employee.name}</span>
     </div>
     <div class="encapsulation os">
-      <button class="btn-default sm">
+      <button data-os-id="${cur.id}" class="btn-default sm">
         <ion-icon name="document-sharp"></ion-icon>
       </button>
+      <div data-os-body="${cur.id}" class="card-os">
+        <button data-os-id="${cur.id}" class="btn-close">
+          <i class='bx bx-x'></i>
+        </button>
+        <h2>Gerar Ordem de Serviço</h2>
+        <p>Escolha qual modelo da ordem de serviço do <strong>${cur.brand} ${cur.model}</strong>.</p>
+        <div class="card-os_footer">
+          <button class="card-os_footer--btn">Tela</button>
+          <button class="card-os_footer--btn">Limpeza</button>
+          <button class="card-os_footer--btn">Normal</button>
+        </div>
+      </div>
     </div>
     <div class="encapsulation">
       <button class="options">

@@ -65,7 +65,7 @@ const title = /* html */ `
 `
 companyNameElm.innerHTML = title
 
-getPage('history')
+getPage('list/device')
 
 links.addEventListener('click', linkHandle, { capture: false })
 profBtnElm.addEventListener('click', profileHandle)
@@ -165,7 +165,6 @@ function getPage(page) {
         let i = 0
         const deviceToUpdateStatus = []
         mainListContainer.addEventListener('click', e => {
-          const main = document.querySelector('.main')
           const clickedElement = e.target
 
           clickedElement.className === 'options' ? optionMenuHandle(clickedElement) : null
@@ -221,6 +220,21 @@ function getPage(page) {
               await promise
               setTimeout(() => updateButtonElm.remove(), 1400)
             })
+          }
+          if (e.target.dataset.osId) {
+            const { osId } = e.target.dataset            
+            if (osId) {
+              const osElmToBeOpened = document.querySelector(`[data-os-body="${osId}"]`)
+              const osElmToBeClosed = Array
+                .from(document.querySelectorAll('[data-os-body]'))
+                .filter(elm => elm !== osElmToBeOpened)
+                .find(elm => elm.classList.contains('show'))
+              
+              if (osElmToBeClosed) {
+                osElmToBeClosed.classList.remove('show')
+              }
+              osElmToBeOpened.classList.toggle('show')
+            }
           }
           if (e.target.dataset.option) {
             const { option, deviceId } = e.target.dataset
@@ -390,7 +404,7 @@ async function notify () {
       ${cur.model} está atrasado atenção!
     </span>
   `, '')
-  console.log(notifyHtml)
+  
   notifyButton.nextElementSibling.innerHTML = notifyHtml || '<span>Sem notificações!</span>'
   notifyButton.addEventListener('click', () => {
     notifyButton.nextElementSibling.classList.toggle('show')
