@@ -21,7 +21,7 @@ export default async function () {
     setTimeout(() => {
       logoutContainer.remove()
       resolve()
-    }, 3000)
+    }, 2000)
   })
   await startPromise
   const cookie = document.cookie.split("; ")

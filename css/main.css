@@ -69,20 +69,120 @@ option {
 }
 
 .login-container {
-  width: min-content;
+  max-width: max-content;
   padding: 1.3em;
   background-color: var(--bg-primary);
   border-radius: var(--radius-small);
   box-shadow: 0 8px 10px -8px rgba(0, 0, 0, 0.5), 
     0 2px 5px 0 rgba(0, 0, 0, 0.05);
   z-index: 1;
+  position: relative;
   transition: all 200ms linear; 
 }
 
+.logged-container {
+  display: flex;
+  column-gap: 20px;
+}
+
+.login-content {
+  max-width: max-content;
+  min-width: 700px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+}
+
+.default {
+  font-size: 18px;
+  font-weight: 400;
+  align-self: flex-start;
+}
+
 .login-container h1 {
-  font-weight: 500;
+  font-weight: 300;
+  font-size: 24px;
   margin-bottom: 1em;
   text-align: center;
+}
+
+.login-content > span:first-of-type {
+  margin-bottom: 24px;
+}
+
+[data-to-first] i {
+  pointer-events: none;
+}
+
+[data-html-restore] span {
+  pointer-events: none;
+}
+
+.logged-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin-top: 40px;
+  margin-bottom: calc(40px + 1em);
+}
+
+[data-to-first] {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  font-size: 32px;
+  color: #181818;
+}
+.close {
+  position: absolute;
+  top: 0;
+  right: -10px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: flex-end;
+  font-size: 24px;
+  background-color: transparent;
+  display: none;
+}
+
+.close i {
+  pointer-events: none;
+}
+
+.account-logged {
+  position: relative;
+  width: 128px;
+  height: 128px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 64px;
+  background-color: var(--bg-primary);
+  border: 2px solid var(--color-primary);
+  font-size: 64px;
+}
+
+.account-logged.active {
+  position: absolute;
+  top: -64px;
+}
+
+.account-logged:hover > .close {
+  display: flex;
+}
+
+
+.account-logged span {
+  font-weight: 200;
+  color: var(--color-primary);
+}
+
+
+.account-logged span:nth-child(2) {
+  pointer-events: none;
 }
 
 .msg {
@@ -260,6 +360,11 @@ option {
   top: -10px;
   right: -10px;
   font-size: 18px;
+}
+
+.carrousel {
+  flex: 1;
+  display: flex;
 }
 
 @keyframes rotate {

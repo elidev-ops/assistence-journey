@@ -99,16 +99,14 @@ updateHistory.close = () => {
     }
   }, { params: { date: null } })
 
-  console.log(historyOpen)
-
   if (historyOpen) {
     historyOpen.date = Intl.DateTimeFormat('pt-BR', { dateStyle: 'short' })
-    historyOpen.mediaIncome = 0
       .format(new Date(now.getFullYear(), now.getMonth() + 1, 0))
+    historyOpen.mediaIncome = 0
     historyOpen.updatedAt = new Date()
     historyRepo.updateOne({ id: historyOpen.id }, historyOpen)
   }
 }
 
-// updateHistory.close()
+updateHistory.close()
 updateHistory()

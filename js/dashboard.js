@@ -44,7 +44,7 @@ const { company, username } = document.cookie.split(';').reduce((acc, cur) => ({
   ...acc, [cur.split('=')[0].trim()]: cur.split('=')[1].trim()
 }), {})
 
-export const account = accountsRepo.findOne({ username })
+export const account = accountsRepo.findOne({ params: { username } })
 
 const root = document.querySelector('#root')
 const links = document.querySelector('.links')
@@ -65,7 +65,7 @@ const title = /* html */ `
 `
 companyNameElm.innerHTML = title
 
-getPage('list/device')
+getPage('home')
 
 links.addEventListener('click', linkHandle, { capture: false })
 profBtnElm.addEventListener('click', profileHandle)
@@ -221,9 +221,10 @@ function getPage(page) {
               setTimeout(() => updateButtonElm.remove(), 1400)
             })
           }
-          if (e.target.dataset.osId) {
-            const { osId } = e.target.dataset            
+          if (clickedElement.dataset.osId) {
+            const { osId } = clickedElement.dataset            
             if (osId) {
+              const main = clickedElement.offsetParent.parentElement
               const osElmToBeOpened = document.querySelector(`[data-os-body="${osId}"]`)
               const osElmToBeClosed = Array
                 .from(document.querySelectorAll('[data-os-body]'))
@@ -234,6 +235,13 @@ function getPage(page) {
                 osElmToBeClosed.classList.remove('show')
               }
               osElmToBeOpened.classList.toggle('show')
+              const clickedPosition = clickedElement.offsetTop
+              osElmToBeOpened.style.setProperty('top', clickedPosition + 'px')
+              main.scroll({
+                top: clickedElement.offsetTop,
+                left: 0,
+                behavior: 'smooth'
+              })
             }
           }
           if (e.target.dataset.option) {
@@ -332,7 +340,7 @@ function showClientContents(elm) {
 
 function mousemoveHandle(e) {
   const element = e.target
-  if (element.dataset.textView) {
+  if (element.dataset?.textView) {
     const { pageX } = e
     const mainListContainer = e.target.closest('.main_list-container')
     const highlightBox = element.nextElementSibling

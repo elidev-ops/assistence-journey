@@ -5,55 +5,94 @@ import { successElement } from './messages.js'
 import { createData } from './create-data.js'
 import { sessionValidation } from './session-validation.js'
 
+const { log } = console
+
 sessionValidation()
 
 const root = document.querySelector('.root')
-const formElm = document.querySelector('[data-js="form"]')
-const loginContainerH1 = document.querySelector('.login-container h1')
-const logeddinElm = document.querySelector('[data-js="logeddin"]')
+const loginContainerElm = document.querySelector('.login-container')
 
 const accountsRepo = getCacheRepository('accounts')
 
 const logeddin = JSON.parse(localStorage.getItem('logeddin')) || []
-const usersHtml = logeddin
-  .filter(user => user.logeddin)
-  .reduce((acc, cur) => acc += /* html */ `
-    <button data-logeddin-username="${cur.username}" class="logeddin-btn">
-      <span class="close-logeddin" data-logeddin-username="${cur.username}">x</span>
-      ${atFirst(cur.name)}
-    </button>`, '')
-logeddinElm.innerHTML = usersHtml
+const users = logeddin.filter(user => user.logeddin)
+const firstScreen = () => {
+  const logeddin = JSON.parse(localStorage.getItem('logeddin')) || []
+  const users = logeddin.filter(user => user.logeddin)
+  return users.reduce((acc, cur, index, arr) => {
+    if (index === 0) acc += /* html */ `
+      <div class="login-content">
+        <h1>Quem é você?</h1>
+        <div class="logged-container">`
+    acc += /* html */ `
+          <button data-logged-id="${cur.username}" class="account-logged">
+            <span class="close" data-logged-id="${cur.username}">
+              <i class="bx bx-x"></i>
+            </span>
+            <span data-logged-id="${cur.username}">${atFirst(cur.name)}</span>
+          </button>`
+    if (arr.lastIndexOf(cur) === arr.length - 1) {
+      acc += /* html */ `
+          </div>
+          <button data-html-restore="true" class="default">
+            <span>Entrar com outra conta.</span>
+          </button>
+          </div>`
+    }
+    return acc
+  }, '')
+}
 
-logeddinElm.addEventListener('click', event => {
+const previousHtmlForm = loginContainerElm.innerHTML
+
+logeddin.length ? loginContainerElm.innerHTML = firstScreen() : null
+
+loginContainerElm.addEventListener('click', event => {
   const clickedElm = event.target
-  if (clickedElm.dataset.logeddinUsername) {
-    const username = clickedElm.dataset.logeddinUsername
-
+  const username = clickedElm.dataset.loggedId
+  if (username) {
     if (clickedElm.tagName === 'SPAN') {
       removeRememberMe(username)
-      window.location.reload()
+      return
     }
-
-    loginContainerH1.innerHTML = `Bem vindo de volta ${username}`
-
-    formElm.innerHTML = /* html */ `
-      <div class="input-box">
-        <input type="hidden" name="username" value="${username}">
+    const restOfScreens = users.find(u => u.username === username)
+    const userHtmlSecondary = /* html */ `
+      <div class="login-content" data-profile-id="${restOfScreens.username}">
+        <button data-to-first="true">
+          <i class='bx bx-left-arrow-alt'></i>
+        </button>
+        <span class="account-logged">
+          <span>${atFirst(restOfScreens.name)}</span>
+        </span>
+        <h1>Bem-vindo de volta ${restOfScreens.username}!</h1>
+        <form data-js="form">
+          <div class="input-box">
+            <input type="hidden" name="username" value="${restOfScreens.username}">
+            <input type="password" name="password" placeholder="Senha">
+          </div>
+          <button class="btn" data-js="signin">
+            <span>Entrar</span>
+          </button>
+        </form>
+        <div class="navigate">
+          <button data-html-restore="true" class="default">
+            <span>Entrar com outra conta.</span>
+          </button>
+        </div>
       </div>
-      <div class="input-box">
-        <input type="password" name="password" placeholder="Senha">
-      </div>
-      <button class="btn" data-js="signin">
-        <span>Entrar</span>
-      </button>
     `
-
+    loginContainerElm.innerHTML = userHtmlSecondary
     document.querySelector('input[type="password"]').focus()
   }
-  event.stopPropagation()
+  if (clickedElm.dataset.toFirst) {
+    loginContainerElm.innerHTML = firstScreen()
+  }
+  if (clickedElm.dataset.htmlRestore) {
+    loginContainerElm.innerHTML = previousHtmlForm
+  }
 })
 
-formElm.addEventListener('submit', signInHandle)
+document.addEventListener('submit', signInHandle)
 
 async function signInHandle(event) {
   event.preventDefault()
@@ -73,18 +112,21 @@ async function signInHandle(event) {
   const filterUser = logeddin.filter(user => user.username !== response)
   localStorage.setItem('logeddin', JSON.stringify([
     ...filterUser,
-    { username: response[0], name: response[1],  logeddin: event.target['rememberMe'].checked }
+    { username: response[0], name: response[1], logeddin: event.target['rememberMe'].checked }
   ]))
 }
 
-function removeRememberMe (username) {
-  document.querySelector(`[data-logeddin-username="${username}"]`).remove()
+function removeRememberMe(username) {
+  document.querySelector(`[data-logged-id="${username}"]`).remove()
   const logeddin = JSON.parse(localStorage.getItem('logeddin')) || []
   const filterUser = logeddin.filter(user => user.username !== username)
   localStorage.setItem('logeddin', JSON.stringify(filterUser))
+  if (!filterUser.length) {
+    window.location.reload()
+  }
 }
 
-function atFirst (name) {
+function atFirst(name) {
   const arr = name.split(' ')
   return arr[0].charAt(0) + arr[1].charAt(0)
 }

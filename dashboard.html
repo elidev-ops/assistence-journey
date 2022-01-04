@@ -23,12 +23,22 @@
   <div id="root" class="root">
     <main class="dashboard">
       <header class="header">
-        <div class="search">
+        <form data-form="search" class="search">
           <i class='bx bx-search'></i>
           <input type="text" name="search" data-js="search" placeholder="Pesquisar...">
-        </div>
+          <div id="select-box">
+            <select name="option">
+              <option value="clients" selected>
+                Cliente
+              </option>
+              <option value="devices">
+                Dispositivo
+              </option>
+            </select>
+          </div>
+        </form>
         <div class="profile">
-          <button data-js="backup" class="icon">
+          <button data-js="backup" class="icon" data-text="Backup do Banco de dados">
             <i class='bx bxs-data'></i>
           </button>
           <div class="notify-wrapper">

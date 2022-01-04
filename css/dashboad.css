@@ -175,10 +175,17 @@ details > span:last-of-type:after {
 .search {
   width: 300px;
   height: 40px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   padding: 1em;
   color: var(--link-color-primary);
+  border: 1px solid var(--color-gray-alpha);
+}
+
+.search input {
+  width: 100%;
+  padding-right: 14px;
 }
 
 .search i {
@@ -565,6 +572,7 @@ details > span:last-of-type:after {
 }
 
 .btn-default {
+  z-index: 1;
   display: block;
   width: 96px;
   height: 34px;
@@ -890,7 +898,7 @@ a.show-text:hover {
 }
 
 .options-menu {
-  z-index: 1;
+  z-index: 2;
   width: max-content;
   max-height: calc(100vh - 20px);
   background-color: var(--bg-primary);
@@ -1847,6 +1855,55 @@ a.show-text:hover {
   transform: scale(1.1);
   background-color: var(--color-primary);
   color: var(--bg-primary);
+}
+
+[data-text] {
+  position: relative;
+}
+
+[data-text]::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  display: block;
+  transform: rotate(45deg);
+  position: absolute;
+  bottom: -17px;
+  display: none;
+  background-color: #181818;
+}
+
+[data-text]::after {
+  content: attr(data-text);
+  width: max-content;
+  height: 35px;
+  line-height: 35px;
+  padding: 0 8px;
+  position: absolute;
+  bottom: -48px;
+  display: none;
+  font-size: 12px;
+  color: #fff;
+  border-radius: 10px;
+  background-color: #181818;
+}
+[data-text]:hover::after,
+[data-text]:hover::before {
+  display: block;
+}
+
+#select-box {
+  display: flex;
+  height: 40px;
+  padding-left: 14px;
+  border-left: 1px solid var(--color-gray-alpha);
+}
+
+#select-box select {
+  width: min-content;
+  border: none;
+  background: none;
+  color: #aaa;
 }
 
 @keyframes loading_v2 {
