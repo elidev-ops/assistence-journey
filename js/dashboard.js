@@ -2,14 +2,13 @@ import { getCacheRepository } from './db.js'
 import logout from './logout.js'
 import { sessionValidation } from './session-validation.js'
 import { api } from './request.js'
-import { startStorage } from './post-request.js'
-import { firstAppointment, secondAppointment } from './generate-appointments.js'
 import { createHtmlDevices } from './devices-page.js'
 import { updateButton } from './update-button.js'
 import { deleteAndUpdate } from './delete-and-update.js'
 import { createHtmlClients } from './clients-page.js'
 import { updateHistory } from './create-history.js'
 import { historyComponent } from './history-component.js'
+import { observerUpdateData } from './observers.js'
 import './create-history.js'
 
 const { log } = console
@@ -104,15 +103,11 @@ function getPage(page) {
       client: async () => {
         const response = await api.get('/views/cad-client.html')
         sectionMainElm.innerHTML = await response.text()
-        firstAppointment(clientsRepo)
-        secondAppointment(clientsRepo)
-        startStorage()
+        observerUpdateData.publisher('event-page', clientsRepo)
       },
       device: async () => {
         const response = await api.get('/views/cad-device.html')
         sectionMainElm.innerHTML = await response.text()
-        firstAppointment(devicesRepo)
-        secondAppointment(devicesRepo)
         const clientElm = document.querySelector('#clients')
         clientElm.innerHTML += clientsRepo.find()
           .sort((x, y) => {
@@ -121,7 +116,7 @@ function getPage(page) {
             return a == b ? 0 : a > b ? 1 : -1
           })
           .reduce((acc, cur) => acc += `<option value="${cur.id}">${cur.name} ${cur.surname}</option>`, '')
-        startStorage()
+          observerUpdateData.publisher('event-page', devicesRepo)
       },
     },
     list: {
@@ -445,7 +440,7 @@ async function notify () {
         })
         await removeAlertAuto
       }
-    }, 5000)
+    }, 300000)
   }
 }
 

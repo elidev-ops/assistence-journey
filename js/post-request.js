@@ -5,8 +5,8 @@ import { validationComposite, clientValidations, deviceValidations } from './val
 import { saveMessage } from './messages.js'
 import uuidv4 from './uuid.js'
 import { account } from './dashboard.js'
-import { firstAppointment, secondAppointment } from './generate-appointments.js'
-import { updateHistory } from './create-history.js'
+import { observerUpdateData } from './observers.js'
+
 let timeOut = null
 
 const configForm = (from) => ({
@@ -33,9 +33,7 @@ const postRequest = (request) => ({
 
     if (!exists) {
       clientsRepo.insert(data)
-      firstAppointment(clientsRepo)
-      secondAppointment(clientsRepo)
-      updateHistory()
+      observerUpdateData.publisher('event-page', clientsRepo)
     }
     
     return exists !== undefined
@@ -59,9 +57,7 @@ const postRequest = (request) => ({
     data.updatedAt = new Date()   
 
     devicesRepo.insert(data)
-    firstAppointment(devicesRepo)
-    secondAppointment(devicesRepo)
-    updateHistory()
+    observerUpdateData.publisher('event-page', devicesRepo)
   }
 })[request] || undefined
 

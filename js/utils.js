@@ -34,9 +34,14 @@ export const createNumberWhatsapp = (number) => {
 }
 
 export const createBadge = (data) => {
-  const date = Intl.DateTimeFormat('pt-BR').format(new Date(data))
-  const dateNow = Intl.DateTimeFormat('pt-BR').format(new Date())
-  return date === dateNow ? /* html */
+  const dateNowModifier = new Date(data)
+  const date = new Date(
+    dateNowModifier.getFullYear(),
+    dateNowModifier.getMonth(),
+    dateNowModifier.getDate() + 7).getTime()
+  const dateNow = new Date().getTime()
+      
+  return date >= dateNow ? /* html */
     `<span class="badge">
       Novo
     </span>`
