@@ -315,7 +315,7 @@ function closeAccordionItem(accordionHeaderToBeClosed) {
   accordionHeaderToBeClosed.classList.remove('open')
 }
 
-function showDeviceContents(elm) {
+export function showDeviceContents(elm) {
   const devicesHtmlProgress = devicesRepo.find()
     .filter(data => data.status === -1)
     .reduce(createHtmlDevices, '')
@@ -329,7 +329,7 @@ function showDeviceContents(elm) {
   elm.innerHTML = (devicesHtmlProgress + devicesHtmlAwaiting + devicesHtmlDelivered) || '<span>Sem produtos cadastrados!</span>'
 }
 
-function showClientContents(elm) {
+export function showClientContents(elm) {
   elm.innerHTML = clientsRepo.find().reduce(createHtmlClients, '') || '<span>Sem clientes no sistema!</span>'
 }
 

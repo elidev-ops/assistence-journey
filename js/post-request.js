@@ -72,7 +72,6 @@ export function startStorage () {
       const key = formElm.dataset.form
       const objectData = createData(formElm)
       const err = validationComposite(configForm(key).validation(objectData))
-      console.log(err)
       
       if (err) {
         executeError(err)
@@ -93,7 +92,7 @@ export function startStorage () {
   })
 }
 
-async function activeButtonSend(btn) {
+export async function activeButtonSend(btn) {
   return new Promise(resolve => {
     btn.classList.add('sending')
     if (!timeOut) {

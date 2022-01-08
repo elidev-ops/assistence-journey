@@ -1,4 +1,10 @@
 import { createNormalBadge } from './utils.js'
+import { Subject } from './subject.js'
+
+function updateAppointments (data) {
+  const appointment = document.querySelector(`.${data.appointment}`)
+  appointment.innerHTML = data.content
+}
 
 export const firstAppointment = (repo) => {
   const devicesBox =
@@ -19,13 +25,18 @@ export const firstAppointment = (repo) => {
         ''
       ) || 'Sem entradas de dispositivos'
 
-  const firstAppointment = document.querySelector('.fist-appointment')
-  firstAppointment.innerHTML = devicesBox
+  updateAppointments({
+    appointment: 'fist-appointment',
+    content: devicesBox
+  })
 }
 
 export const secondAppointment = (repo) => {
   const date = new Date()
-  const date1 = new Date(date.getFullYear(), date.getMonth(), 0)
+  const defaultValueDay = 2
+  const defaultValueWeek = defaultValueDay * 6
+  const defaultValueMonth = defaultValueWeek * 4
+  const defaultValueYear = defaultValueMonth * 12
 
   const devicesDaily = repo.find().filter(device =>
     Intl.DateTimeFormat('pt-BR').format(new Date(device.createdAt)) ===
@@ -48,10 +59,10 @@ export const secondAppointment = (repo) => {
     return deviceDate.getFullYear() === dateNow.getFullYear() ? device : ''
   })
 
-  const percentDaily = isInt((devicesDaily.length * 100) / 1)
-  const percentWeek = isInt((devicesWeek.length * 100) / 5)
-  const percentMonth = isInt((devicesMonth.length * 100) / (date1.getDate() / 5))
-  const percentYear = isInt((devicesYear.length * 100) / (365 / 5))
+  const percentDaily = isInt((devicesDaily.length * 100) / defaultValueDay)
+  const percentWeek = isInt((devicesWeek.length * 100) / defaultValueWeek)
+  const percentMonth = isInt((devicesMonth.length * 100) / defaultValueMonth)
+  const percentYear = isInt((devicesYear.length * 100) / defaultValueYear)
 
   const dailyHtml = /* html */ `
     <div class="container-box">
@@ -61,7 +72,7 @@ export const secondAppointment = (repo) => {
       <div class="container-box_content">
         <div class="container-box_content--header">
           <strong>Relatório diário</strong>
-          ${createNormalBadge(`${devicesDaily.length} / 1`)}
+          ${createNormalBadge(`${devicesDaily.length} / ${defaultValueDay}`)}
         </div>
         <div style="--w: ${percentDaily}%;" class="stats" data-stats="${percentDaily}%"></div>
       </div>
@@ -75,7 +86,7 @@ export const secondAppointment = (repo) => {
       <div class="container-box_content">
       <div class="container-box_content--header">
         <strong>Relatório semanal</strong>
-          ${createNormalBadge(`${devicesWeek.length} / 5`)}
+          ${createNormalBadge(`${devicesWeek.length} / ${defaultValueWeek}`)}
         </div>
         <div style="--w: ${percentWeek}%;" class="stats" data-stats="${percentWeek}%"></div>
       </div>
@@ -89,7 +100,7 @@ export const secondAppointment = (repo) => {
       <div class="container-box_content">
         <div class="container-box_content--header">
           <strong>Relatório mensal</strong>
-          ${createNormalBadge(`${devicesMonth.length} / ${(date1.getDate() / 2)}`)}
+          ${createNormalBadge(`${devicesMonth.length} / ${defaultValueMonth}`)}
         </div>
         <div style="--w: ${percentMonth}%;" class="stats" data-stats="${percentMonth}%"></div>
       </div>
@@ -103,17 +114,16 @@ export const secondAppointment = (repo) => {
       <div class="container-box_content">
         <div class="container-box_content--header">
           <strong>Relatório anual</strong>
-          ${createNormalBadge(`${devicesYear.length} / ${(365 / 2) | 0}`)}
+          ${createNormalBadge(`${devicesYear.length} / ${defaultValueYear}`)}
         </div>
         <div style="--w: ${percentYear}%;" class="stats" data-stats="${percentYear}%"></div>
       </div>
     </div>
   `
-  const secondAppointment = document.querySelector('.second-appointment')
-  secondAppointment.innerHTML = dailyHtml
-  secondAppointment.innerHTML += weekHtml
-  secondAppointment.innerHTML += monthHtml
-  secondAppointment.innerHTML += yearHtml
+  updateAppointments({
+    appointment: 'second-appointment',
+    content: dailyHtml + weekHtml + monthHtml + yearHtml
+  })
 }
 
 function isInt (number) {

@@ -4,7 +4,7 @@ export function createHtmlClients (acc, cur, index, arr) {
   if (index === 0) acc += /* html */
     `<div class="main_list-container-block">
       <div class="main_list-container--header client">
-        <span class="progress">Nome</span>
+        <span>Nome</span>
         <span>Data</span>
         <span>Email</span>
         <span>Whatsapp</span>
