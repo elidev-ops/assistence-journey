@@ -3,11 +3,21 @@ import { CustomError, executeError } from './errors.js'
 import { signupValidations, validationComposite } from './validation.js'
 import { successElement } from './messages.js'
 import { createData } from './create-data.js'
+import { EventEmitter } from './emitter.js'
 
 const root = document.querySelector('.root')
 const formElm = document.querySelector('[data-js="form"]')
 const accountRepo = getCacheRepository('accounts')
-formElm.addEventListener('submit', signUpHandle)
+
+formElm.addEventListener('submit', submitHandle)
+
+const emitter = new EventEmitter()
+const unsubscribeEmitter = emitter.on('event:submit-signup', signUpHandle)
+
+function submitHandle (event) {
+  emitter.emit('event:submit-signup', event)
+  unsubscribeEmitter()
+}
 
 if (accountRepo.find().length) {
   const companyElm = document.querySelector('input[name=company]').parentNode
@@ -47,7 +57,7 @@ function signUpHandle (event) {
   }
 
   if (validAccount) {
-    executeError(new CustomError('Usuario ou email já existe no nosso sistema', 'username'))
+    executeError(new CustomError('Usuário ou email já existe no nosso sistema', 'username'))
     return
   }
 

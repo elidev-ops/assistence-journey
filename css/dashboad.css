@@ -266,6 +266,10 @@ details > span:last-of-type:after {
   position: relative;
 }
 
+.icon.notify i {
+  pointer-events: none;
+}
+
 .icon.notify::after {
   content: attr(data-notify-count);
   width: 10px;
@@ -828,6 +832,7 @@ details > span:last-of-type:after {
   padding: 1em;
   border-radius: 4px;
   transition: none;
+  z-index: 9999;
 }
 
 .main_list-container--box .hint > i {
@@ -1693,6 +1698,10 @@ a.show-text:hover {
 .notify-wrapper {
   position: relative;
   display: table;
+}
+
+.notify-wrapper > button i {
+  pointer-events: none;
 }
 
 .notify-container {

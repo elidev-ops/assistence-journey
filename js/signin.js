@@ -4,6 +4,7 @@ import { signinValidations, validationComposite } from './validation.js'
 import { successElement } from './messages.js'
 import { createData } from './create-data.js'
 import { sessionValidation } from './session-validation.js'
+import { EventEmitter } from './emitter.js'
 
 const { log } = console
 
@@ -92,14 +93,21 @@ loginContainerElm.addEventListener('click', event => {
   }
 })
 
-document.addEventListener('submit', signInHandle)
+document.addEventListener('submit', submitHandle)
+
+const emitter = new EventEmitter()
+const unsubscribeEmitter = emitter.on('event:submit-signin', signInHandle)
+
+function submitHandle (event) {
+  emitter.emit('event:submit-signin', event)
+  unsubscribeEmitter()
+}
 
 async function signInHandle(event) {
   event.preventDefault()
 
   const objectData = createData(event.target)
   const err = validationComposite(signinValidations(objectData))
-
 
   if (err) {
     executeError(err)

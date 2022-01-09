@@ -6,6 +6,8 @@ import { saveMessage } from './messages.js'
 import uuidv4 from './uuid.js'
 import { account } from './dashboard.js'
 import { observerUpdateData } from './observers.js'
+import { EventEmitter } from './emitter.js'
+
 
 let timeOut = null
 
@@ -20,46 +22,50 @@ const configForm = (from) => ({
   }
 })[from] || 'err 400 - Algo de errado não esta certo'
 
-const postRequest = (request) => ({
-  postClient: (data) => {
-    const { name, surname, username } = account
-    const clientsRepo = getCacheRepository('clients')
+const postRequest = (request) => (data) => emitter.emit(request, data)
 
-    data.id = uuidv4()
-    data.employee = { name, surname, username }
-    data.createdAt = new Date()
-    data.updatedAt = new Date()
-    const exists = clientsRepo.findOne({ params: { phone: data.phone } })
+const emitter = new EventEmitter()
+emitter.on('postClient', postClient)
+emitter.on('postDevice', postDevice)
 
-    if (!exists) {
-      clientsRepo.insert(data)
-      observerUpdateData.publisher('event-page', clientsRepo)
-    }
-    
-    return exists !== undefined
-  },
-  postDevice: (data) => {
-    const { name, surname, username } = account
-    const clientsRepo = getCacheRepository('clients')
-    const devicesRepo = getCacheRepository('devices')
-    const client = clientsRepo.findOne({ params: { id: data.client } })
-    
-    data.id = uuidv4()
-    data.employee = { name, surname, username }
-    data.client = {
-      id: client.id,
-      name: `${client.name} ${client.surname}`,
-      phone: client.phone,
-      email: client.email
-    }
-    data.status = -1
-    data.createdAt = new Date()
-    data.updatedAt = new Date()   
+function postClient (data) {
+  const { name, surname, username } = account
+  const clientsRepo = getCacheRepository('clients')
 
-    devicesRepo.insert(data)
-    observerUpdateData.publisher('event-page', devicesRepo)
+  data.id = uuidv4()
+  data.employee = { name, surname, username }
+  data.createdAt = new Date()
+  data.updatedAt = new Date()
+  const exists = clientsRepo.findOne({ params: { phone: data.phone } })
+
+  if (!exists) {
+    clientsRepo.insert(data)
+    observerUpdateData.publisher('event-page', clientsRepo)
   }
-})[request] || undefined
+  
+  return exists !== undefined
+}
+function postDevice (data) {
+  const { name, surname, username } = account
+  const clientsRepo = getCacheRepository('clients')
+  const devicesRepo = getCacheRepository('devices')
+  const client = clientsRepo.findOne({ params: { id: data.client } })
+  
+  data.id = uuidv4()
+  data.employee = { name, surname, username }
+  data.client = {
+    id: client.id,
+    name: `${client.name} ${client.surname}`,
+    phone: client.phone,
+    email: client.email
+  }
+  data.status = -1
+  data.createdAt = new Date()
+  data.updatedAt = new Date()   
+
+  devicesRepo.insert(data)
+  observerUpdateData.publisher('event-page', devicesRepo)
+}
 
 export function startStorage () {
   const mainBoxContainerElm = document.querySelector('.main-box_content')

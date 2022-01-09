@@ -6,9 +6,9 @@ import { createHtmlDevices } from './devices-page.js'
 import { updateButton } from './update-button.js'
 import { deleteAndUpdate } from './delete-and-update.js'
 import { createHtmlClients } from './clients-page.js'
-import { updateHistory } from './create-history.js'
 import { historyComponent } from './history-component.js'
 import { observerUpdateData } from './observers.js'
+import { Notifyer } from './notify.js'
 import './create-history.js'
 
 const { log } = console
@@ -21,6 +21,9 @@ const accountsRepo = getCacheRepository('accounts')
 const clientsRepo = getCacheRepository('clients')
 const devicesRepo = getCacheRepository('devices')
 
+const notifyer = new Notifyer()
+notifyer.init()
+notifyer.notify()
 
 function backup () {
   const backupButtonElm = document.querySelector('[data-js="backup"]')
@@ -104,6 +107,7 @@ function getPage(page) {
         const response = await api.get('/views/cad-client.html')
         sectionMainElm.innerHTML = await response.text()
         observerUpdateData.publisher('event-page', clientsRepo)
+        observerUpdateData.publisher('event-history', devicesRepo)
       },
       device: async () => {
         const response = await api.get('/views/cad-device.html')
@@ -117,6 +121,7 @@ function getPage(page) {
           })
           .reduce((acc, cur) => acc += `<option value="${cur.id}">${cur.name} ${cur.surname}</option>`, '')
           observerUpdateData.publisher('event-page', devicesRepo)
+          observerUpdateData.publisher('event-history', devicesRepo)
       },
     },
     list: {
@@ -142,6 +147,7 @@ function getPage(page) {
             const { option, clientId } = e.target.dataset
             deleteAndUpdate(clientsRepo, option, clientId)()
             showClientContents(mainListContainer)
+            notifyer.init()
           }
         })
       },
@@ -200,8 +206,9 @@ function getPage(page) {
               for (const data of deviceToUpdateStatus) {
                 const { id, status } = data
                 devicesRepo.updateOne({ id }, { status })
-                updateHistory()
               }
+              observerUpdateData.publisher('event-history', devicesRepo)
+              notifyer.init()
 
               const promise = new Promise(resolve => {
                 setTimeout(() => {
@@ -243,6 +250,7 @@ function getPage(page) {
             const { option, deviceId } = e.target.dataset
             deleteAndUpdate(devicesRepo, option, deviceId)()
             showDeviceContents(mainListContainer)
+            notifyer.init()
           }
         })
       },
@@ -388,61 +396,4 @@ function infoDataHandler(e) {
   })
 }
 
-async function notify () {
-  const laggingDevices = devicesRepo.find(device => {
-    const devData = new Date(device.updatedAt)
-      .getTime() + (24 * 60 * 60 * 1000)
-    const now = new Date().getTime()
-    if (devData < now) return device
-  } ,{ params: { status: -1 } })
-  const notifyButton = document.querySelector('[data-js="notifications"]')
-
-  if (laggingDevices.length) {
-    notifyButton.classList.add('notify')
-    notifyButton.dataset.notifyCount = laggingDevices.length
-  }
-  const notifyHtml = laggingDevices.reduce((acc, cur) => acc += /* html */ `
-    <span>
-      <i class='bx bxs-error'></i>
-      ${cur.model} está atrasado atenção!
-    </span>
-  `, '')
-  
-  notifyButton.nextElementSibling.innerHTML = notifyHtml || '<span>Sem notificações!</span>'
-  notifyButton.addEventListener('click', () => {
-    notifyButton.nextElementSibling.classList.toggle('show')
-  })
-  if (laggingDevices.length) {
-    setInterval(async () => {
-      for (const device of laggingDevices) {
-        const notifyHtml = /* html */ `
-          <div data-notify-id="${device.id}" class="notify-alert">
-            <i class='bx bxs-error'></i>
-            <span class="notify-alert_text">
-              Produto em atraso
-              <span>${device.brand} ${device.model}</span>
-            </span>
-            <button data-close-notify="${device.id}" class="notify-alert_button">
-              <i class='bx bx-x'></i>
-            </button>
-          </div>
-        `
-        root.insertAdjacentHTML('afterbegin', notifyHtml)
-        document.querySelector('[data-close-notify]')
-          .addEventListener('click', function() {
-            this.offsetParent.remove()
-          })
-        const removeAlertAuto = new Promise(resolve => {
-          setTimeout(() => {
-            document.querySelector(`[data-notify-id="${device.id}"]`)?.remove()
-            resolve()
-          }, 5000)
-        })
-        await removeAlertAuto
-      }
-    }, 300000)
-  }
-}
-
-notify()
 backup()
