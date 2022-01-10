@@ -8,7 +8,6 @@ notifyEmitter.on('event:notify', startNotify)
 const unsubscribeActiveNotifyBtn = notifyEmitter.on('event:active-button', activeNotifyButton)
 
 function notifyChangeClass(elm) {
-  console.log(elm)
   elm.nextElementSibling.classList.toggle('show')
 }
 

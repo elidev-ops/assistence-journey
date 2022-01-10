@@ -6,6 +6,10 @@ const deviceRepo = getCacheRepository('devices')
 
 const now = new Date()
 
+const lastHistory = historyRepo.find(h => h.date)
+  .reduce((acc, cur) => acc = [...acc, ...cur.devices] ,[])
+  .map(d => d.id)
+
 export function updateHistory () {
   const clients = clientRepo.find(filterToDate)
   const devices = deviceRepo.find(filterToDate, { params: { status: 1 } })
@@ -13,6 +17,7 @@ export function updateHistory () {
   const clientsLastMonth = clientRepo.find(filterToLastDate)
   const income = devices.reduce(sumAmount, 0)
   const lastIncome = lastMonth.reduce(sumAmount, 0)
+
   const employeeAmount = Object.entries(devices.reduce((acc, { employee, amount }) => ({
     ...acc,
     [employee.username]: (acc[employee.username] || 0) + +amount })
@@ -51,7 +56,7 @@ export function updateHistory () {
 }
 
 function filterToDate (arr) {
-  if (compareDate(arr.updatedAt)) return arr 
+  if (compareDate(arr.updatedAt) && !lastHistory.includes(arr.id)) return arr 
 }
 
 function filterToLastDate (arr) {
@@ -92,15 +97,16 @@ function sumAmount (acc, cur) {
 
 updateHistory.close = () => {
   const historyOpen = historyRepo.findOne(history => {
-    const historyDate = createDate(history.createdAt)
+    const h = createDate(history.createdAt)
+    const historyDate = new Date(h.getFullYear(), h.getMonth() + 1, 0)
     const nowDate = createDate(new Date())
     if (historyDate.getTime() < nowDate.getTime()) {
       return history 
     }
   }, { params: { date: null } })
-
   if (historyOpen) {
-    historyOpen.date = Intl.DateTimeFormat('pt-BR', { dateStyle: 'short' })
+    historyOpen.date = Intl
+      .DateTimeFormat('pt-BR', { dateStyle: 'short' })
       .format(new Date(now.getFullYear(), now.getMonth() + 1, 0))
     historyOpen.mediaIncome = 0
     historyOpen.updatedAt = new Date()

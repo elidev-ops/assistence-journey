@@ -31,7 +31,6 @@ export function getCacheRepository (repo) {
     if (typeof callback && callback instanceof Function) {
       dataCache = dataCache.filter(callback)
     }
-    // console.log(dataCache, callback, callback.order)
     return callback.order 
       ? orderBy(dataCache, callback.order) : order 
       ? orderBy(dataCache, order) : dataCache.sort((a, b) =>
