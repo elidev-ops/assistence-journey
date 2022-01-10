@@ -11,9 +11,9 @@ export function GetRepositoryProxy (repository) {
   this.cache = []
 
   this.insert = function (data) {
-    this.api.insert(data)
+    return this.api.insert(data)
   }
-  this.find = function (params, { order } = {}) {
+  this.find = function (params, secondParams) {
     const network = this.api.find()
     if (!this.cache[repository] || this.cache[repository] !== network) {
       this.cache[repository] = network
@@ -21,11 +21,11 @@ export function GetRepositoryProxy (repository) {
 
     return this.cache[repository]
   }
-  this.findOne = function (params) {
-    this.api.findOne(params)
+  this.findOne = function (params, secondParams) {
+    return this.api.findOne(params, secondParams)
   }
   this.updateOne = function (params, data) {
-    this.api.updateOne(params, data)
+    return this.api.updateOne(params, data)
   }
   this.deleteOne = function (params) {
     this.api.deleteOne(params)
