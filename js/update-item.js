@@ -3,6 +3,7 @@ import { executeError } from './errors.js'
 import { validationComposite, clientValidations, deviceValidations  } from './validation.js'
 import { activeButtonSend } from './post-request.js'
 import { showClientContents, showDeviceContents } from './dashboard.js'
+import { observerUpdateData } from './observers.js'
 
 const configForm = (from) => ({
   client: {
@@ -132,6 +133,7 @@ export function updateItem(repository, id) {
     }
 
     repository.updateOne(id, objectData)
+    observerUpdateData.publisher('event-history')
     const buttonSaveElm = updateItemElm.querySelector('.btn')
     await activeButtonSend(buttonSaveElm)
     buttonSaveElm.classList.add('updated')
