@@ -98,7 +98,7 @@ function removeActiveElement({ target, element, className }) {
     ?.classList.remove(className)
 }
 
-function getPage(page) {
+export function getPage(page, data) {
   if (!page) return
   const [first, second] = page.split('/')
   const toPage = (uri) => ({
@@ -125,12 +125,13 @@ function getPage(page) {
       },
     },
     list: {
-      client: async () => {
+      clients: async (data) => {
         const response = await api.get('/views/list-clients.html')
         sectionMainElm.innerHTML = await response.text()
-        document.querySelector('.main_list-sub').textContent = `${clientsRepo.find().length} clientes`
+        const totalClient = data ? data.length : clientsRepo.find().length
+        document.querySelector('.main_list-sub').textContent = `${totalClient} clientes`
         const mainListContainer = document.querySelector('.main_list-container')
-        showClientContents(mainListContainer)
+        showClientContents(mainListContainer, data)
         mainListContainer.addEventListener('mousemove', mousemoveHandle)
         mainListContainer.addEventListener('click', e => {
           const clickedElement = e.target
@@ -151,12 +152,13 @@ function getPage(page) {
           }
         })
       },
-      device: async () => {
+      devices: async (data) => {
         const response = await api.get('/views/list-devices.html')
         sectionMainElm.innerHTML = await response.text()
-        document.querySelector('.main_list-sub').textContent = `${devicesRepo.find().length} dispositivos`
+        const totalDevices = data ? data.length : devicesRepo.find().length
+        document.querySelector('.main_list-sub').textContent = `${totalDevices} dispositivos`
         const mainListContainer = document.querySelector('.main_list-container')
-        showDeviceContents(mainListContainer)
+        showDeviceContents(mainListContainer, data)
         mainListContainer.addEventListener('mousemove', mousemoveHandle)
         const status = {
           progress: -1,
@@ -289,7 +291,7 @@ function getPage(page) {
       })
     }
   })[uri]
-  second ? toPage(first)[second]() : toPage(first)()
+  second ? toPage(first)[second](data) : toPage(first)(data)
 }
 
 function accordionHeaderClick(event) {
@@ -323,22 +325,24 @@ function closeAccordionItem(accordionHeaderToBeClosed) {
   accordionHeaderToBeClosed.classList.remove('open')
 }
 
-export function showDeviceContents(elm) {
-  const devicesHtmlProgress = devicesRepo.find()
+export function showDeviceContents(elm, data) {
+  const repo = data || devicesRepo.find()
+  const devicesHtmlProgress = repo
     .filter(data => data.status === -1)
     .reduce(createHtmlDevices, '')
-  const devicesHtmlAwaiting = devicesRepo.find()
+  const devicesHtmlAwaiting = repo
     .filter(data => data.status === 0)
     .reduce(createHtmlDevices, '')
-  const devicesHtmlDelivered = devicesRepo.find()
+  const devicesHtmlDelivered = repo
     .filter(data => data.status === 1)
     .reduce(createHtmlDevices, '')
 
   elm.innerHTML = (devicesHtmlProgress + devicesHtmlAwaiting + devicesHtmlDelivered) || '<span>Sem produtos cadastrados!</span>'
 }
 
-export function showClientContents(elm) {
-  elm.innerHTML = clientsRepo.find().reduce(createHtmlClients, '') || '<span>Sem clientes no sistema!</span>'
+export function showClientContents(elm, data) {
+  const repo = data || clientsRepo.find()
+  elm.innerHTML = repo.reduce(createHtmlClients, '') || '<span>Sem clientes no sistema!</span>'
 }
 
 function mousemoveHandle(e) {
