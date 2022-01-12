@@ -7,16 +7,16 @@ const deviceRepo = getCacheRepository('devices')
 const now = new Date()
 
 const lastHistory = historyRepo.find(h => h.date)
-  .reduce((acc, cur) => acc = [...acc, ...cur.devices] ,[])
+  .reduce((acc, cur) => acc = [...acc, ...cur.devices, ...cur.clients] ,[])
   .map(d => d.id)
 
 export function updateHistory () {
   const clients = clientRepo.find(filterToDate)
   const devices = deviceRepo.find(filterToDate, { params: { status: 1 } })
-  const lastMonth = deviceRepo.find(filterToLastDate, { params: { status: 1 } })
-  const clientsLastMonth = clientRepo.find(filterToLastDate)
+  const clientsLastMonth = historyRepo.findOne(filterToLastDate).clients
+  const devicesLastMonth = historyRepo.findOne(filterToLastDate).devices
   const income = devices.reduce(sumAmount, 0)
-  const lastIncome = lastMonth.reduce(sumAmount, 0)
+  const lastIncome = devicesLastMonth.reduce(sumAmount, 0)
 
   const employeeAmount = Object.entries(devices.reduce((acc, { employee, amount }) => ({
     ...acc,
@@ -33,8 +33,8 @@ export function updateHistory () {
 
   const currentHistoryData = {
     date: null,
-    lastClients: clientsLastMonth.length,
-    lastDevices: lastMonth.length,
+    lastClients: clientsLastMonth.length || 0,
+    lastDevices: devicesLastMonth.length || 0,
     mediaIncome: deviceRepo.find(filterToDate).reduce(sumAmount, 0),
     incomeDifference: {
       value: lastIncome,
@@ -60,7 +60,7 @@ function filterToDate (arr) {
 }
 
 function filterToLastDate (arr) {
-  if (compareDate(arr.updatedAt, { last: true })) return arr
+  if (compareDate(arr.createdAt, { last: true })) return arr
 }
 
 function verifyObject (obj) {
