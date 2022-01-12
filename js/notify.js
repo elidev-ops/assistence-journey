@@ -51,7 +51,6 @@ Notifyer.prototype.init = function () {
 
   notifyButton.nextElementSibling.innerHTML = notifyHtml || '<span>Sem notificações!</span>'
   notifyButton.addEventListener('click', notifyHandle)
-  notifyEmitter.emit('event:notify', this.devices)
 }
 
 Notifyer.prototype.notify = function () {
