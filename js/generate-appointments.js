@@ -1,5 +1,4 @@
 import { createNormalBadge } from './utils.js'
-import { Subject } from './subject.js'
 
 function updateAppointments (data) {
   const appointment = document.querySelector(`.${data.appointment}`)

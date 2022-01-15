@@ -62,6 +62,9 @@ export function createHtmlDevices (acc, cur, index, arr) {
         <span>Entrada: ${createDateBrazil(cur.createdAt, 'long')}</span>
         <span>Atualizado: ${createDateBrazil(cur.updatedAt, 'long')}</span>
         <p><strong>Notas: </strong>${cur.description}</p>
+        <button data-view-images="true">
+          <i class='bx bx-search'></i> Imagens
+        </button>
       </div>
     </div>
     <div class="encapsulation">

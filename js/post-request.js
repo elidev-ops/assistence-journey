@@ -41,10 +41,12 @@ function postClient (data) {
   if (!exists) {
     clientsRepo.insert(data)
     observerUpdateData.publisher('event-page', clientsRepo)
+    observerUpdateData.publisher('event-history')
   }
   
   return exists !== undefined
 }
+
 function postDevice (data) {
   const { name, surname, username } = account
   const clientsRepo = getCacheRepository('clients')
@@ -65,6 +67,7 @@ function postDevice (data) {
 
   devicesRepo.insert(data)
   observerUpdateData.publisher('event-page', devicesRepo)
+  observerUpdateData.publisher('event-history')
 }
 
 export function startStorage () {

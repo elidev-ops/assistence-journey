@@ -9,6 +9,7 @@ import { createHtmlClients } from './clients-page.js'
 import { historyComponent } from './history-component.js'
 import { observerUpdateData } from './observers.js'
 import { Notifyer } from './notify.js'
+import { googleapis } from './googleapis.js'
 import './create-history.js'
 
 const { log } = console
@@ -48,14 +49,13 @@ const { company, username } = document.cookie.split(';').reduce((acc, cur) => ({
 
 export const account = accountsRepo.findOne({ params: { username } })
 
-const root = document.querySelector('#root')
 const links = document.querySelector('.links')
 const profBtnElm = document.querySelector('.profile_name')
 const companyNameElm = document.querySelector('.company_name')
 const logoutBtn = document.querySelector('[data-js="logout"]')
 const sectionMainElm = document.querySelector('.main')
 
-logoutBtn.onclick = () => logout()
+logoutBtn.addEventListener('click', logout)
 
 window.document.title = `Dashboard - ${company}`
 
@@ -69,25 +69,29 @@ companyNameElm.innerHTML = title
 
 getPage('home')
 
-links.addEventListener('click', linkHandle, { capture: false })
+links.addEventListener('click', linkHandler, { capture: false })
 profBtnElm.addEventListener('click', profileHandle)
 
-function linkHandle(event) {
+
+function linkHandler (event) {
   const clickedElm = event.target
-  if (clickedElm.tagName === 'LI' || clickedElm.tagName === 'A') {
-    event.preventDefault()
+  if (clickedElm.tagName === 'LI' || clickedElm.tagName === 'A') { 
+    activeLink(clickedElm)
     getPage(clickedElm.dataset.page)
-    removeActiveElement({
-      target: links,
-      element: clickedElm.tagName,
-      className: 'active'
-    })
-    removeActiveElement({ target: links, element: 'a', className: 'active' })
-    clickedElm.classList.add('active')
   }
 }
 
-function profileHandle(event) {
+export function activeLink(element) {
+  const elementToBeDeactivated = Array
+    .from(links.querySelectorAll(element.tagName))
+    .filter(elm => elm !== element)
+    .find(elm => elm.classList.contains('active'))
+    
+    if (elementToBeDeactivated) elementToBeDeactivated.classList.remove('active')
+    element.classList.add('active')
+}
+
+function profileHandle() {
   profBtnElm.classList.toggle('active')
   profBtnElm.nextElementSibling.classList.toggle('show')
 }
@@ -156,10 +160,14 @@ export function getPage(page, data) {
         const response = await api.get('/views/list-devices.html')
         sectionMainElm.innerHTML = await response.text()
         const totalDevices = data ? data.length : devicesRepo.find().length
+
         document.querySelector('.main_list-sub').textContent = `${totalDevices} dispositivos`
+
         const mainListContainer = document.querySelector('.main_list-container')
+
         showDeviceContents(mainListContainer, data)
         mainListContainer.addEventListener('mousemove', mousemoveHandle)
+
         const status = {
           progress: -1,
           awaiting: 0,
@@ -167,6 +175,7 @@ export function getPage(page, data) {
         }
         let i = 0
         const deviceToUpdateStatus = []
+        
         mainListContainer.addEventListener('click', e => {
           const clickedElement = e.target
 
@@ -401,3 +410,19 @@ function infoDataHandler(e) {
 }
 
 backup()
+
+const images = await googleapis('note 7')
+const imgHtml = images.reduce((acc, cur) => 
+  acc += /* html */`
+    <figure>
+      <img src="${cur.url}"/>
+    </figure>`, '')
+
+const masonry = `
+  <div class="masonry">
+    ${imgHtml}
+  </div>`
+const $root = document.querySelector('#root')
+// $root.innerHTML = masonry
+
+

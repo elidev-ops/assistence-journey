@@ -13,8 +13,8 @@ const lastHistory = historyRepo.find(h => h.date)
 export function updateHistory () {
   const clients = clientRepo.find(filterToDate)
   const devices = deviceRepo.find(filterToDate, { params: { status: 1 } })
-  const clientsLastMonth = historyRepo.findOne(filterToLastDate).clients
-  const devicesLastMonth = historyRepo.findOne(filterToLastDate).devices
+  const clientsLastMonth = historyRepo.findOne(filterToLastDate)?.clients || []
+  const devicesLastMonth = historyRepo.findOne(filterToLastDate)?.devices || []
   const income = devices.reduce(sumAmount, 0)
   const lastIncome = devicesLastMonth.reduce(sumAmount, 0)
 

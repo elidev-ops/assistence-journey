@@ -270,7 +270,8 @@ details > span:last-of-type:after {
 
 .icon.notify::after {
   content: attr(data-notify-count);
-  width: 10px;
+  width: fit-content;
+  padding: 0 3.2px;
   height: 10px;
   color: var(--bg-primary);
   font-size: 7px;
@@ -1928,6 +1929,50 @@ a.show-text:hover {
   border: none;
   background: none;
   color: #aaa;
+}
+
+.masonry img {
+  width: 100%;
+  border-radius: 4px;
+}
+
+.masonry figure {
+  margin: 0;
+  display: flex;
+  break-inside: avoid;
+}
+
+.masonry {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: masonry;
+}
+
+[data-view-images] {
+  margin: 0 auto;
+  display: block;
+  padding: 0 14px;
+  border-radius: 100px;
+  margin-top: 15px;
+  background-color:var(--color-primary-alpha);;
+  color: var(--color-primary);
+  display: flex;
+  font-size: 12px;
+  align-items: center;
+  font-weight: 500;
+  box-shadow: 0px 9px 25px 0px rgba(132, 128, 177, 0.28)!important;
+  transition: all 200ms ease-in-out;
+}
+
+[data-view-images]:hover {
+  background-color:var(--color-primary);;
+  color: var(--link-active-color);
+}
+
+[data-view-images] > i {
+  font-size: 18px;
+  margin-right: 8px;
 }
 
 @keyframes loading_v2 {

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sync</title>
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/css/root.css">
+  <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100vh;
+      font-family: 'Nunito';
+      background-color: #f1f1f1;
+    }
+    .sync {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      width: 50%;
+      gap: 15px;
+    }
+
+    .sync > * {
+      display: block;
+    }
+
+    .loading  {
+      --w: 0%;
+      width: 100%;
+      height: 6px;
+      border-radius: 6px;
+      background-color: #ddd;
+    }
+
+    .loading::after {
+      content: '';
+      width: var(--w);
+      display: block;
+      height: 100%;
+      border-radius: 100px;
+      background-color: #713bdb;
+      transition: all ease-in-out 600ms;
+    }
+
+    .percent {
+      font-size: 18px;
+      font-weight: 700;
+      color: #713bdb;
+      display: flex;
+      align-items: center;
+    }
+
+    .title {
+      color: #181818;
+    }
+
+    .title.load::after {
+      content: '';
+      animation: loading-title 2000ms ease-in-out infinite;
+    }
+
+    .sync-content {
+      display: flex;
+      flex-direction: column;
+      color: #00b884;
+      font-weight: 700;
+      font-size: 14px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .sync-content i {
+      font-size: 18px;
+      margin-right: 8px;
+    }
+
+    .sync-content > span {
+      padding: 5px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    img {
+      width: 200px;
+      margin-bottom: 16px;
+    }
+
+    @keyframes loading-title {
+      0%, 100% {
+        content: ''
+      }
+      25% {
+        content: '.'
+      }
+      50% {
+        content: '..';
+      }
+      75% {
+        content: '...';
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="sync">
+    <img src="/assets/sync.png" alt="">
+    <h2 class="title load">Sincronizando dados com o servidor</h2>
+    <span class="loading"></span>
+    <span class="percent">
+      0%
+    </span>
+    <div class="sync-content">
+      
+    </div>
+  </div>
+
+  <script>
+    const titleElm = document.querySelector('.title')
+    const loadingElm = document.querySelector('.loading')
+    const percentElm = document.querySelector('.percent')
+    const syncContentElm = document.querySelector('.sync-content')
+
+    const promise = (time = 1000) => new Promise(resolve => 
+      setTimeout(resolve, time, { status: 200, response: 'done' }))
+
+    const repo = Object.keys(localStorage).filter(h => h !== 'logeddin')
+    const promiseAll = [
+      promise,
+      promise,
+      promise,
+      promise
+    ]
+    
+
+    let i = 0
+
+    let total = promiseAll.length
+
+    const a = (async () => {
+      for await (let network of promiseAll) {
+        i++
+        const repoName = repo[i - 1]
+        titleElm.textContent = `Sincronizando cache de ${repoName} com o servidor`
+        await network(2000 * i)
+        const html = /* html */ `
+          <span>
+            <i class='bx bxs-check-shield'></i>
+            Banco de dados ${repoName.charAt(0).toUpperCase() + repoName.slice(1)} sincronizado.
+          </span>
+        `
+        syncContentElm.innerHTML += html
+        const percent = `${((100 * i) / total)}%`
+        loadingElm.style.setProperty('--w', percent)
+        percentElm.textContent = percent
+        if (i >= total) {
+          titleElm.textContent = 'Todos dados foram sincronizados!!!'
+          titleElm.classList.remove('load')
+        }
+      }
+    })()
+  </script>
+</body>
+</html>

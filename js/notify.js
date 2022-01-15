@@ -75,12 +75,14 @@ async function startNotify (data) {
           <i class='bx bx-x'></i>
         </button>
       </div>`
+
     document.querySelector('#root')
       .insertAdjacentHTML('afterbegin', notifyHtml)
     document.querySelector('[data-close-notify]')
       .addEventListener('click', function () {
         notifyEmitter.emit('event:remove-element', this.offsetParent)
       })
+      
     const removeAlertAuto = new Promise(resolve => {
       setTimeout(() => {
         document.querySelector(`[data-notify-id="${device.id}"]`)?.remove()

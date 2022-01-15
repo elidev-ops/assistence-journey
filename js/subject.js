@@ -10,10 +10,10 @@ Subject.prototype.unsubscribe = function (fnToRemove) {
   this.state = this.state.filter(fn => fn !== fnToRemove)
 } 
 
-Subject.prototype.publisher = function (key, data) {
+Subject.prototype.publisher = function (key, ...rest) {
   for (const observer of this.state) {
     if (observer.key === key) {
-      observer.action(data)
+      observer.action(...rest)
     }
   }
 } 
