@@ -10,6 +10,7 @@ import { historyComponent } from './history-component.js'
 import { observerUpdateData } from './observers.js'
 import { Notifyer } from './notify.js'
 import { googleapis } from './googleapis.js'
+import { EventEmitter } from './emitter.js'
 import './create-history.js'
 
 const { log } = console
@@ -49,73 +50,88 @@ const { company, username } = document.cookie.split(';').reduce((acc, cur) => ({
 
 export const account = accountsRepo.findOne({ params: { username } })
 
-const links = document.querySelector('.links')
-const profBtnElm = document.querySelector('.profile_name')
-const companyNameElm = document.querySelector('.company_name')
-const logoutBtn = document.querySelector('[data-js="logout"]')
-const sectionMainElm = document.querySelector('.main')
+const $links = document.querySelector('.links')
+const $sectionMainElm = document.querySelector('.main')
+const $profBtnElm = document.querySelector('.profile_name')
+const $companyNameElm = document.querySelector('.company_name')
+const $logoutBtn = document.querySelector('[data-js="logout"]')
 
-logoutBtn.addEventListener('click', logout)
+$logoutBtn.addEventListener('click', logout)
 
 window.document.title = `Dashboard - ${company}`
 
 document.querySelector('[data-img]').src = `https://avatars.dicebear.com/api/adventurer-neutral/${username}.svg`
-profBtnElm.children[0].textContent = account.name
+$profBtnElm.children[0].textContent = account.name
 
-const title = /* html */ `
- <span class="highlight">D</span>ashboard
-`
-companyNameElm.innerHTML = title
+$companyNameElm.innerHTML = /* html */ `<span class="highlight">D</span>ashboard`
 
-getPage('home')
-
-links.addEventListener('click', linkHandler, { capture: false })
-profBtnElm.addEventListener('click', profileHandle)
+$links.addEventListener('click', sidebarLinkHandle)
+$profBtnElm.addEventListener('click', profileHandle)
 
 
-function linkHandler (event) {
-  const clickedElm = event.target
-  if (clickedElm.tagName === 'LI' || clickedElm.tagName === 'A') { 
-    activeLink(clickedElm)
-    getPage(clickedElm.dataset.page)
-  }
+function sidebarLinkHandle (event) {
+  addActiveClassInLink(event.target)
+  const uri = event.target.dataset.page
+    ?.replace(/\/([a-z])/g, (_, w) => w.toUpperCase())
+  navigate(uri)
 }
 
-export function activeLink(element) {
+export function addActiveClassInLink (elm) {
+  const clickedElementToBeActivate = elm
   const elementToBeDeactivated = Array
-    .from(links.querySelectorAll(element.tagName))
-    .filter(elm => elm !== element)
+    .from($links.querySelectorAll(clickedElementToBeActivate.tagName))
+    .filter(elm => elm !== clickedElementToBeActivate)
+    .find(elm => elm.classList.contains('active'))
+  
+  const childrenToBeDeactivated = Array
+    .from($links.querySelectorAll('li > ul *'))
     .find(elm => elm.classList.contains('active'))
     
-    if (elementToBeDeactivated) elementToBeDeactivated.classList.remove('active')
-    element.classList.add('active')
+  if (elementToBeDeactivated) {
+    elementToBeDeactivated.classList.remove('active')
+    childrenToBeDeactivated?.classList.remove('active')
+  }
+  clickedElementToBeActivate.id ?
+    clickedElementToBeActivate.classList.toggle('active') :
+    clickedElementToBeActivate.classList.add('active')
 }
 
 function profileHandle() {
-  profBtnElm.classList.toggle('active')
-  profBtnElm.nextElementSibling.classList.toggle('show')
+  $profBtnElm.classList.toggle('active')
+  $profBtnElm.nextElementSibling.classList.toggle('show')
+}
+const emitter = new EventEmitter()
+
+emitter.on('home', routes('home'))
+emitter.on('registerClient', routes('registerClient'))
+emitter.on('registerDevice', routes('registerDevice'))
+emitter.on('listClients', routes('listClients'))
+emitter.on('listDevices', routes('listDevices'))
+emitter.on('history', routes('history'))
+
+navigate('home')
+
+function to (promise) {
+  return promise
+    .then(result => [null, result])
+    .catch(err => [err])
 }
 
-function removeActiveElement({ target, element, className }) {
-  Array.from(target.querySelectorAll(element))
-    .find(el => el.classList.contains(className))
-    ?.classList.remove(className)
+export function navigate (uri, data) {
+  emitter.emit(uri, data)
 }
 
-export function getPage(page, data) {
-  if (!page) return
-  const [first, second] = page.split('/')
-  const toPage = (uri) => ({
-    register: {
-      client: async () => {
+function routes (uri) {
+  return ({
+      registerClient: async () => {
         const response = await api.get('/views/cad-client.html')
-        sectionMainElm.innerHTML = await response.text()
+        $sectionMainElm.innerHTML = response
         observerUpdateData.publisher('event-page', clientsRepo)
         observerUpdateData.publisher('event-history', devicesRepo)
       },
-      device: async () => {
+      registerDevice: async () => {
         const response = await api.get('/views/cad-device.html')
-        sectionMainElm.innerHTML = await response.text()
+        $sectionMainElm.innerHTML = response
         const clientElm = document.querySelector('#clients')
         clientElm.innerHTML += clientsRepo.find()
           .sort((x, y) => {
@@ -127,11 +143,9 @@ export function getPage(page, data) {
           observerUpdateData.publisher('event-page', devicesRepo)
           observerUpdateData.publisher('event-history', devicesRepo)
       },
-    },
-    list: {
-      clients: async (data) => {
+      listClients: async (data) => {
         const response = await api.get('/views/list-clients.html')
-        sectionMainElm.innerHTML = await response.text()
+        $sectionMainElm.innerHTML = response
         const totalClient = data ? data.length : clientsRepo.find().length
         document.querySelector('.main_list-sub').textContent = `${totalClient} clientes`
         const mainListContainer = document.querySelector('.main_list-container')
@@ -156,9 +170,9 @@ export function getPage(page, data) {
           }
         })
       },
-      devices: async (data) => {
+      listDevices: async (data) => {
         const response = await api.get('/views/list-devices.html')
-        sectionMainElm.innerHTML = await response.text()
+        $sectionMainElm.innerHTML = response
         const totalDevices = data ? data.length : devicesRepo.find().length
 
         document.querySelector('.main_list-sub').textContent = `${totalDevices} dispositivos`
@@ -265,14 +279,13 @@ export function getPage(page, data) {
           }
         })
       },
-    },
     home: async () => {
       const response = await api.get('/views/main.html')
-      sectionMainElm.innerHTML = await response.text()
+      $sectionMainElm.innerHTML = response
     },
     history: async () => {
       const response = await api.get('/views/history.html')
-      sectionMainElm.innerHTML = await response.text()
+      $sectionMainElm.innerHTML = response
       document.querySelector('.main_list-sub').textContent = `${historyRepo.find().length} caixas`
       const mainListContainer = document.querySelector('.main_list-container')
 
@@ -300,7 +313,6 @@ export function getPage(page, data) {
       })
     }
   })[uri]
-  second ? toPage(first)[second](data) : toPage(first)(data)
 }
 
 function accordionHeaderClick(event) {
@@ -410,19 +422,3 @@ function infoDataHandler(e) {
 }
 
 backup()
-
-const images = await googleapis('note 7')
-const imgHtml = images.reduce((acc, cur) => 
-  acc += /* html */`
-    <figure>
-      <img src="${cur.url}"/>
-    </figure>`, '')
-
-const masonry = `
-  <div class="masonry">
-    ${imgHtml}
-  </div>`
-const $root = document.querySelector('#root')
-// $root.innerHTML = masonry
-
-

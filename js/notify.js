@@ -24,6 +24,17 @@ function removeNotifyElm (elm) {
   elm.remove()
 }
 
+const notifyMsg = {
+  '-1': {
+    msg: 'está em atraso brincadeira brincadeira!',
+    icon: 'bx bxs-error-circle'
+  },
+  '0': {
+    msg: 'cliente ainda não buscou? Ai da uma pegada!',
+    icon: 'bx bxs-help-circle'
+  }
+}
+
 export function Notifyer() {
   this.devices = null
 }
@@ -34,8 +45,9 @@ Notifyer.prototype.init = function () {
     const devData = new Date(device.updatedAt)
       .getTime() + (24 * 60 * 60 * 1000)
     const now = new Date().getTime()
-    if (devData < now) return device
-  }, { params: { status: -1 } })
+    if (devData < now && device.status < 1) return device
+  })
+
   const notifyButton = document.querySelector('[data-js="notifications"]')
 
   if (this.devices.length) {
@@ -44,8 +56,8 @@ Notifyer.prototype.init = function () {
   }
   const notifyHtml = this.devices.reduce((acc, cur) => acc += /* html */ `
     <span>
-      <i class='bx bxs-error'></i>
-      ${cur.model} está atrasado atenção!
+      <i class='${notifyMsg[cur.status].icon}'></i>
+      ${cur.model} ${notifyMsg[cur.status].msg}
     </span>
   `, '')
 

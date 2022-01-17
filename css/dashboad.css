@@ -1628,7 +1628,14 @@ a.show-text:hover {
 }
 
 .data-header span:first-of-type {
-  justify-content: start;
+  width: 100%;
+  display: block;
+  text-align-last: left;
+  align-items: center;
+  justify-self: flex-start;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .data-header i {
@@ -1749,7 +1756,11 @@ a.show-text:hover {
   color: var(--color-primary);
 }
 
-.notify-container span > .bxs-error {
+.notify-container span > .bxs-error-circle {
+  color: var(--color-active);
+}
+
+.notify-container span > .bxs-help-circle {
   color: var(--color-low);
 }
 
