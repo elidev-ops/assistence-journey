@@ -16,7 +16,7 @@ function notifyHandle(event) {
 }
 
 function activeNotifyButton({ elm, data }) {
-  elm.classList.add('notify')
+  data.length ? elm.classList.add('notify') : elm.classList.remove('notify')
   elm.dataset.notifyCount = data.length
 }
 

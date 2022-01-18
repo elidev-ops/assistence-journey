@@ -42,7 +42,7 @@ function activeLinkSearch (uri) {
   const boxToBeOpened = linkToBeActivated.closest('#dropdown')
   const boxToBeClosed = getElmToBeClosed(boxToBeOpened, '#dropdown')
   const linkToBeDeactivated = getElmToBeClosed(linkToBeActivated, '[data-page]')
-  console.log(boxToBeOpened)
+
   addActiveClassInLink(boxToBeOpened)
 
   if (boxToBeClosed && linkToBeDeactivated) {

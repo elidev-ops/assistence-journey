@@ -215,11 +215,14 @@ function routes (uri) {
             spanStatus.classList.remove(className)
             spanStatus.classList.add(statusEntry[i])
             const id = e.target.dataset.id
-            if (!deviceToUpdateStatus.find(d => d.id === id))
+
+            if (!deviceToUpdateStatus.find(d => d.id === id)) {
               deviceToUpdateStatus.push({
                 id,
                 status: status[statusEntry[i]]
               })
+            }
+              
             deviceToUpdateStatus.map(data => {
               if (data.id === id) {
                 data.id = id
@@ -233,7 +236,6 @@ function routes (uri) {
                 devicesRepo.updateOne({ id }, { status })
               }
               observerUpdateData.publisher('event-history', devicesRepo)
-              notifyer.init()
 
               const promise = new Promise(resolve => {
                 setTimeout(() => {
@@ -241,6 +243,7 @@ function routes (uri) {
                   updateButtonElm.innerHTML = `<i class='bx bx-check'></i>`
                   updateButtonElm.classList.add('success')
                   showDeviceContents(mainListContainer)
+                  notifyer.init()
                   resolve()
                 }, 2000)
               })
@@ -422,3 +425,26 @@ function infoDataHandler(e) {
 }
 
 backup()
+
+// const imageData = await googleapis('j1 mini')
+// const imagesHtml = imageData.reduce((acc, cur) => acc += /* html */ `
+//   <div class="masonry">
+//     <img src="${cur.url}" alt="${cur.title}" title="${cur.title}" />
+//     <span>${cur.title}</span>
+//   </div>
+// `, '')
+
+// const $root = document.querySelector('#root')
+// $root.insertAdjacentHTML('afterbegin', /* html */ `
+//   <div class="gallery">
+//   <h1>Galeria de imagens</h1>
+//     <div class="gallery-controls">
+//       <button class="gallery-btn">
+//         <i class="bx bx-x"></i>
+//       </button>
+//       </div>
+//     <div class="gallery-container">
+//       ${imagesHtml}
+//     </div>
+//   </div>
+// `)
