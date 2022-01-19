@@ -13,6 +13,7 @@ import { googleapis } from './googleapis.js'
 import { EventEmitter } from './emitter.js'
 import { galleryElm } from './gallery.js'
 import './create-history.js'
+import { appInfo } from './app-info.js'
 
 const { log } = console
 
@@ -59,6 +60,9 @@ const $sectionMainElm = document.querySelector('.main')
 const $profBtnElm = document.querySelector('.profile_name')
 const $companyNameElm = document.querySelector('.company_name')
 const $logoutBtn = document.querySelector('[data-js="logout"]')
+const $authorInfoElm = document.querySelector('[data-js="info-author"]')
+
+$authorInfoElm.textContent = `Powered by ${appInfo.author} ${appInfo.version}`
 
 $logoutBtn.addEventListener('click', logout)
 
@@ -443,26 +447,3 @@ function infoDataHandler(e) {
 }
 
 backup()
-
-// const imageData = await googleapis('j1 mini')
-// const imagesHtml = imageData.reduce((acc, cur) => acc += /* html */ `
-//   <div class="masonry">
-//     <img src="${cur.url}" alt="${cur.title}" title="${cur.title}" />
-//     <span>${cur.title}</span>
-//   </div>
-// `, '')
-
-// const $root = document.querySelector('#root')
-// $root.insertAdjacentHTML('afterbegin', /* html */ `
-//   <div class="gallery">
-//   <h1>Galeria de imagens</h1>
-//     <div class="gallery-controls">
-//       <button class="gallery-btn">
-//         <i class="bx bx-x"></i>
-//       </button>
-//       </div>
-//     <div class="gallery-container">
-//       ${imagesHtml}
-//     </div>
-//   </div>
-// `)

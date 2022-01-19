@@ -1875,7 +1875,7 @@ a.show-text:hover {
   color: var(--color-primary);
 }
 
-.notify-container span > .bxs-error-circle {
+.notify-container span > .bxs-error {
   color: var(--color-active);
 }
 

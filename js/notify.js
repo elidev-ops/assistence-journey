@@ -27,10 +27,12 @@ function removeNotifyElm (elm) {
 const notifyMsg = {
   '-1': {
     msg: 'está em atraso brincadeira brincadeira!',
-    icon: 'bx bxs-error-circle'
+    short: 'Esta em atraso',
+    icon: 'bx bxs-error'
   },
   '0': {
     msg: 'cliente ainda não buscou? Ai da uma pegada!',
+    short: 'Pronto e não entregue',
     icon: 'bx bxs-help-circle'
   }
 }
@@ -78,9 +80,9 @@ async function startNotify (data) {
   for (const device of data) {
     const notifyHtml = /* html */ `
       <div data-notify-id="${device.id}" class="notify-alert">
-        <i class='bx bxs-error'></i>
+        <i class='${notifyMsg[device.status].icon}'></i>
         <span class="notify-alert_text">
-          Produto em atraso
+          ${notifyMsg[device.status].short}
           <span>${device.brand} ${device.model}</span>
         </span>
         <button data-close-notify="${device.id}" class="notify-alert_button">
