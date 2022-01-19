@@ -11,6 +11,7 @@ import { observerUpdateData } from './observers.js'
 import { Notifyer } from './notify.js'
 import { googleapis } from './googleapis.js'
 import { EventEmitter } from './emitter.js'
+import { galleryElm } from './gallery.js'
 import './create-history.js'
 
 const { log } = console
@@ -44,12 +45,15 @@ function backup () {
   }
 }
 
+
+
 const { company, username } = document.cookie.split(';').reduce((acc, cur) => ({
   ...acc, [cur.split('=')[0].trim()]: cur.split('=')[1].trim()
 }), {})
 
 export const account = accountsRepo.findOne({ params: { username } })
 
+const $root = document.querySelector('#root')
 const $links = document.querySelector('.links')
 const $sectionMainElm = document.querySelector('.main')
 const $profBtnElm = document.querySelector('.profile_name')
@@ -190,7 +194,7 @@ function routes (uri) {
         let i = 0
         const deviceToUpdateStatus = []
         
-        mainListContainer.addEventListener('click', e => {
+        mainListContainer.addEventListener('click', async e => {
           const clickedElement = e.target
 
           clickedElement.className === 'options' ? optionMenuHandle(clickedElement) : null
@@ -274,11 +278,25 @@ function routes (uri) {
               })
             }
           }
-          if (e.target.dataset.option) {
+          if (clickedElement.dataset.option) {
             const { option, deviceId } = e.target.dataset
             deleteAndUpdate(devicesRepo, option, deviceId)()
             showDeviceContents(mainListContainer)
             notifyer.init()
+          }
+          if (clickedElement.dataset.viewImages) {
+            const searchParam = clickedElement.dataset.viewImages
+            const oldHtml = clickedElement.innerHTML
+            clickedElement.innerHTML = 'Carregando...'
+            const [error, result] = await to(googleapis(searchParam))
+            if (error) {
+              return clickedElement.innerHTML = 'Falha'
+            }
+            $root.insertAdjacentHTML('afterbegin', galleryElm(result, searchParam))
+            document.querySelector('[data-close-gallery]').onclick = () => {
+              document.querySelector('.gallery').remove()
+            }
+            clickedElement.innerHTML = oldHtml
           }
         })
       },
