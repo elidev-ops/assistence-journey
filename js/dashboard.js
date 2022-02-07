@@ -14,6 +14,7 @@ import { EventEmitter } from './emitter.js'
 import { galleryElm } from './gallery.js'
 import './create-history.js'
 import { appInfo } from './app-info.js'
+import { convertRealValueOutput, nFormatter, simpleReal, percentageMonthlyGrowth, convertToReal } from './utils.js'
 
 const { log } = console
 
@@ -116,6 +117,7 @@ emitter.on('registerDevice', routes('registerDevice'))
 emitter.on('listClients', routes('listClients'))
 emitter.on('listDevices', routes('listDevices'))
 emitter.on('history', routes('history'))
+emitter.on('Brazilian-BRL-Output', convertRealValueOutput)
 
 navigate('home')
 
@@ -150,6 +152,10 @@ function routes (uri) {
           .reduce((acc, cur) => acc += `<option value="${cur.id}">${cur.name} ${cur.surname}</option>`, '')
           observerUpdateData.publisher('event-page', devicesRepo)
           observerUpdateData.publisher('event-history', devicesRepo)
+          document.querySelector('input[name=amount]')
+            .addEventListener('keyup', e => {
+              emitter.emit('Brazilian-BRL-Output', e.target)
+            })
       },
       listClients: async (data) => {
         const response = await api.get('/views/list-clients.html')
@@ -307,6 +313,125 @@ function routes (uri) {
     home: async () => {
       const response = await api.get('/views/main.html')
       $sectionMainElm.innerHTML = response
+      const $mainInfoTop = document.querySelector('.main_info-top')
+      const clients = clientsRepo.find().reduce((acc, cur, _, arr) => {
+        acc.name = 'Clientes'
+        acc.total = arr.length
+        acc.className = 'total-clients'
+        acc.icon = 'bx bx-user'
+        return acc
+      } ,{})
+      const devices = devicesRepo.find().reduce((acc, cur, _, arr) => {
+        acc.name = 'Dispositivos'
+        acc.total = arr.length
+        acc.className = 'total-devices'
+        acc.icon = 'bx bx-devices'
+        return acc
+      }, {})
+      const amountValue = historyRepo.find()[0]
+      const delivered = devicesRepo.find({ params: { status: 0 }}).reduce((acc, cur, _, arr) => {
+        acc.name = 'Aguardando'
+        acc.total = arr.length
+        acc.className = 'devices-awaited'
+        acc.icon = 'bx bx-error'
+        return acc
+      }, {})
+      const pending = devicesRepo.find({ params: { status: -1 }}).reduce((acc, cur, _, arr) => {
+        acc.name = 'Pendentes'
+        acc.total = arr.length
+        acc.className = 'devices-pending'
+        acc.icon = 'bx bx-error-circle'
+        return acc
+      }, {})
+      const arr = [clients, devices, delivered, pending]
+      
+      const $mainTemplate = document.querySelector('[data-main-template]')
+      arr.forEach(data => {
+        if (!Object.keys(data).length) return
+        const $card = $mainTemplate.content.cloneNode(true).children[0]
+        const cardBoxIcon = $card.querySelector('[data-main-box]')
+        const cardIcon = $card.querySelector('[data-main-icon]')
+        const cardName = $card.querySelector('[data-main-name]')
+        const cardValue = $card.querySelector('[data-main-value]')
+        cardBoxIcon.classList.add(data.className)
+        cardIcon.className = data.icon
+        cardName.textContent = data.name
+        cardValue.innerHTML = `${nFormatter(data.total, 1)} <i class='bx bx-up-arrow-alt'></i>`
+        $mainInfoTop.append($card)
+      })
+      const $cardAmount = $mainTemplate.content.cloneNode(true).children[1]
+      const amount = $cardAmount.querySelector('[data-main-amount]')
+      const percent = $cardAmount.querySelector('[data-main-amount-percent]')
+      const badge = $cardAmount.querySelector('.badge')
+      const percentAmount = percentageMonthlyGrowth(amountValue.income, amountValue.incomeDifference.value)
+      badge.children[1].textContent = percentAmount
+      badge.children[0].className = +percentAmount.replace('%', '') < 0 ? 'bx bx-down-arrow-alt' : 'bx bx-up-arrow-alt'
+      badge.classList.add(+percentAmount.replace('%', '') < 0 ? 'warning' : '')
+      amount.innerText = simpleReal(amountValue.income)
+      percent.style.setProperty('--w', '100%')
+      $mainInfoTop.append($cardAmount)
+
+      const monthArr = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+
+      const months = historyRepo.find((_, i) => i <= 14).map(data => 
+        monthArr[new Date(data.createdAt).getMonth()]).reverse()
+        
+      const amountTotal = historyRepo
+        .find((_, i) => i <= 14)
+        .map(data => data.income)
+        .reverse()
+
+      const ctx = document.getElementById('myChart').getContext('2d')
+
+      const gradient = ctx.createLinearGradient(0, 0, 0, 400)
+      gradient.addColorStop(0, 'rgba(115, 75, 209, 1)')
+      gradient.addColorStop(1, 'rgba(115, 75, 209, 0.3)')
+
+
+      new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: months,
+            datasets: [
+              {
+                label: 'Renda',
+                data: amountTotal,
+                fill: true,
+                borderColor: '#fff',
+                backgroundColor: gradient,
+                tension: 0.4
+              }
+            ]
+          },
+          options: {
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    let label = context.dataset.label || ''
+                    if (label) label += ': '
+                    if (context.parsed.y !== null) label += convertToReal(context.parsed.y)
+                    return label
+                  }
+                }
+              }
+            },
+            radius: 5,
+            hitRadius: 30,
+            hoverRadius: 15,
+            responsive: true,
+            scales: {
+              y: {
+                ticks: {
+                  callback: function (value) {
+                    return convertToReal(value)
+                  }
+                }
+              }
+            }
+          }
+      });
+
     },
     history: async () => {
       const response = await api.get('/views/history.html')

@@ -60,3 +60,37 @@ export const percentageMonthlyGrowth = (current, last) => {
 }
 
 export const simplePercent = (first, second) => `${Math.round((second * 100) / first) || 0}%`
+
+export const formatRealInK = value => {
+  if (value.toString().length >= 4) {
+    return Math.floor(value / 1000) + 'K'
+  }
+  return value
+}
+
+export const convertRealValueOutput = (input) => {
+	let value = input.value
+
+  value = parseInt(value.replace(/[\D]+/g, ''))
+  value = (value / 100).toFixed(2) + ''
+  value = value.replace('.', ',')
+  value = value.replace(/(\d)(\d{3})(\d{3}),/g, '$1.$2.$3,')
+  value = value.replace(/(\d)(\d{3}),/g, '$1.$2,')
+  
+  input.value = value
+  if (value === 'NaN') input.value = ''
+}
+
+
+export const nFormatter = (num, digits) => {
+  const lookup = [
+    { value: 1, symbol: ''},
+    { value: 1e3, symbol: 'K'},
+    { value: 1e6, symbol: 'M'},
+    { value: 1e9, symbol: 'G'},
+    { value: 1e12, symbol: 'T'},
+  ]
+  const regex = /\.0+$|(\.[0-9]*[1-9])0+$/
+  let item = lookup.slice().reverse().find(item => num >= item.value)
+  return item ? (num / item.value).toFixed(digits).replace(regex, "$1") + item.symbol : '0'
+}

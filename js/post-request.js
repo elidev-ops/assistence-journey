@@ -63,8 +63,11 @@ function postDevice (data) {
   }
   data.status = -1
   data.createdAt = new Date()
-  data.updatedAt = new Date()   
-
+  data.updatedAt = new Date()
+  data.amount = data.amount
+    .replace(/(\.)/, '')
+    .replace(',', '.')
+    
   devicesRepo.insert(data)
   observerUpdateData.publisher('event-page', devicesRepo)
   observerUpdateData.publisher('event-history')

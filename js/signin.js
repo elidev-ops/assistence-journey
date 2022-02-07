@@ -16,10 +16,11 @@ const loginContainerElm = document.querySelector('.login-container')
 const accountsRepo = getCacheRepository('accounts')
 
 const logeddin = JSON.parse(localStorage.getItem('logeddin')) || []
-const users = logeddin.filter(user => user.logeddin)
+const users = logeddin.filter(user => user)
+
 const firstScreen = () => {
   const logeddin = JSON.parse(localStorage.getItem('logeddin')) || []
-  const users = logeddin.filter(user => user.logeddin)
+  const users = logeddin.filter(user => user)
   return users.reduce((acc, cur, index, arr) => {
     if (index === 0) acc += /* html */ `
       <div class="login-content">

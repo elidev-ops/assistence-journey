@@ -1,57 +1,32 @@
+<template data-main-template>
+  <div class="main_info-top--box">
+    <div class="box-icon" data-main-box>
+      <i class='bx bx-user' data-main-icon></i>
+    </div>
+    <div class="box-content">
+      <strong data-main-name>Clientes</strong>
+      <span data-main-value>2.41K <i class='bx bx-up-arrow-alt'></i></span>
+    </div>
+  </div>
+  <div class="main_info-top--amount">
+    <h2>Renda total</h2>
+    <div class="amount-contrast">
+      <h1 data-main-amount>24,447</h1>
+      <span class="badge">
+        <i class="bx bx-up-arrow-alt"></i>
+        <span>11%</span>
+      </span>
+    </div>
+    <div class="amount-progress">
+      <span data-main-amount-percent class="total-amount"></span>
+    </div>
+    <div class="amount-progress-help">
+      <span>Renda</span>
+      <span>Despesas</span>
+    </div>
+  </div>
+</template>
 <div class="main_list">
-  <section class="main_info-top">
-    <div class="main_info-top--box">
-      <div class="box-icon total-clients">
-        <i class='bx bx-user'></i>
-      </div>
-      <div class="box-content">
-        <strong>Clientes</strong>
-        <span>2.41K <i class='bx bx-up-arrow-alt'></i></span>
-      </div>
-    </div>
-    <div class="main_info-top--box">
-      <div class="box-icon total-devices">
-        <i class='bx bx-devices'></i>
-      </div>
-      <div class="box-content">
-        <strong>Dispositivos</strong>
-        <span>2.41K <i class='bx bx-up-arrow-alt'></i></span>
-      </div>
-    </div>
-    <div class="main_info-top--box">
-      <div class="box-icon devices-delivered">
-        <i class='bx bx-check-circle'></i>
-      </div>
-      <div class="box-content">
-        <strong>Entregues</strong>
-        <span>2.41K <i class='bx bx-up-arrow-alt'></i></span>
-      </div>
-    </div>
-    <div class="main_info-top--box">
-      <div class="box-icon devices-pending">
-        <i class='bx bx-error-circle'></i>
-      </div>
-      <div class="box-content">
-        <strong>Pendentes</strong>
-        <span>2.41K <i class='bx bx-up-arrow-alt'></i></span>
-      </div>
-    </div>
-    <div class="main_info-top--amount">
-      <h2>Renda total</h2>
-      <div class="amount-contrast">
-        <h1>24,447</h1>
-        <span class="badge">
-          <i class="bx bx-up-arrow-alt"></i>
-          11%
-        </span>
-      </div>
-      <div class="amount-progress">
-        <span class="total-amount"></span>
-      </div>
-      <div class="amount-progress-help">
-        <span>Renda</span>
-        <span>Despesas</span>
-      </div>
-    </div>
-  </section>
+  <section class="main_info-top"></section>
+  <canvas id="myChart" height="100"></canvas>
 </div>

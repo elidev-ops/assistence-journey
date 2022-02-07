@@ -26,6 +26,8 @@
   --color-device-text: #734BD1;
   --color-delivered-bg: #BCF1D7;
   --color-delivered-text: #1ECF7A;
+  --color-awaited-bg: hsl(35.8, 100%, 80%);
+  --color-awaited-text: hsl(35.8, 100%, 50%);
   --color-pending-bg: #F7C7C7;
   --color-pending-text: #E34343;
 
@@ -1129,6 +1131,11 @@ a.show-text:hover {
   color: var(--color-delivered-text);
 }
 
+.box-icon.devices-awaited {
+  background-color: var(--color-awaited-bg);
+  color: var(--color-awaited-text);
+}
+
 .box-icon.devices-pending {
   background-color: var(--color-pending-bg);
   color: var(--color-pending-text);
@@ -1577,7 +1584,7 @@ a.show-text:hover {
 }
 
 .badge.warning {
-  background-color: var(--color-warning);
+  background-color: var(--color-warning)!important;
   color: var(--text-color-warning)!important;
 }
 
