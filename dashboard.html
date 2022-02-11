@@ -137,6 +137,19 @@
         <span data-js="info-author">_info</span>
       </footer>
     </main>
+    <template id="alert-layout">
+      <div class="alert-box-container">
+        <div class="alert-box-icon">
+          <ion-icon name="alert-outline"></ion-icon>
+        </div>
+        <h1>Deletar</h1>
+        <p>Tem certeza que quer deletar <span data-alert-data></span>?</p>
+        <div class="alert-box-controllers">
+          <button data-alert="true" class="alert-btn ok">OK</button>
+          <button data-alert="false" class="alert-btn cancel">Cancelar</button>
+        </div>
+      </div>
+    </template>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
   <script src="js/preloader.js"></script>

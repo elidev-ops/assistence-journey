@@ -101,6 +101,7 @@ export function startStorage () {
       document.querySelector('[data-form]').append(msgElm)
       setTimeout(() => msgElm.remove(), 3400)
     }
+    e.target.reset()
   })
 }
 

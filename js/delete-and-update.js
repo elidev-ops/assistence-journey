@@ -3,12 +3,30 @@ import { updateItem } from './update-item.js'
 
 
 export const deleteAndUpdate = (repository, fn, id) => ({
-  update: () => {
+  update: () => new Promise(resolve => {
     document.querySelector('.update-item')?.remove()
     updateItem(repository, id, fn)
-  },
-  delete: () => {
-    repository.deleteOne(id)
-    updateHistory()
-  }
-})[fn]
+    resolve(true)
+  }),
+  delete: () => new Promise(resolve => {
+    document.querySelector('.alert-box-container')?.remove()
+    const [name, complement] = Object.values(repository.findOne({ params: { id }}))
+    const $root = document.querySelector('#root')
+    const $template = document.querySelector('#alert-layout')
+    const alertBox = $template.content.cloneNode(true).children[0]
+    const content = alertBox.querySelector('[data-alert-data]')
+    content.textContent = `${name} ${complement}`
+    $root.append(alertBox)
+      alertBox.addEventListener('click', e => {
+        if (e.target.dataset.alert) {
+          if (JSON.parse(e.target.dataset.alert)) {
+            repository.deleteOne(id)
+            updateHistory()
+          }
+          alertBox.remove()
+          resolve(true)
+        }
+      })
+    resolve(false)
+  })
+})[fn] || null

@@ -160,12 +160,16 @@ function routes (uri) {
       listClients: async (data) => {
         const response = await api.get('/views/list-clients.html')
         $sectionMainElm.innerHTML = response
+
         const totalClient = data ? data.length : clientsRepo.find().length
+
         document.querySelector('.main_list-sub').textContent = `${totalClient} clientes`
+
         const mainListContainer = document.querySelector('.main_list-container')
         showClientContents(mainListContainer, data)
+
         mainListContainer.addEventListener('mousemove', mousemoveHandle)
-        mainListContainer.addEventListener('click', e => {
+        mainListContainer.addEventListener('click', async e => {
           const clickedElement = e.target
 
           clickedElement.className === 'options' ? optionMenuHandle(clickedElement) : null
@@ -178,24 +182,13 @@ function routes (uri) {
           }
           if (e.target.dataset.option) {
             const { option, clientId } = e.target.dataset
-            deleteAndUpdate(clientsRepo, option, clientId)()
+            await deleteAndUpdate(clientsRepo, option, clientId)()
             showClientContents(mainListContainer)
             notifyer.init()
           }
         })
       },
       listDevices: async (data) => {
-        const response = await api.get('/views/list-devices.html')
-        $sectionMainElm.innerHTML = response
-        const totalDevices = data ? data.length : devicesRepo.find().length
-
-        document.querySelector('.main_list-sub').textContent = `${totalDevices} dispositivos`
-
-        const mainListContainer = document.querySelector('.main_list-container')
-
-        showDeviceContents(mainListContainer, data)
-        mainListContainer.addEventListener('mousemove', mousemoveHandle)
-
         const status = {
           progress: -1,
           awaiting: 0,
@@ -203,7 +196,17 @@ function routes (uri) {
         }
         let i = 0
         const deviceToUpdateStatus = []
-        
+
+        const response = await api.get('/views/list-devices.html')
+        $sectionMainElm.innerHTML = response
+        const totalDevices = data ? data.length : devicesRepo.find().length
+
+        document.querySelector('.main_list-sub').textContent = `${totalDevices} dispositivos`
+
+        const mainListContainer = document.querySelector('.main_list-container')
+        showDeviceContents(mainListContainer, data)
+
+        mainListContainer.addEventListener('mousemove', mousemoveHandle)
         mainListContainer.addEventListener('click', async e => {
           const clickedElement = e.target
 
@@ -213,6 +216,15 @@ function routes (uri) {
           if (e.target.dataset.closeId) {
             const contentId = document.querySelector(`[data-device-body="${e.target.dataset.closeId}"]`)
             contentId.classList.remove('show')
+          }
+          if (clickedElement.dataset.option) {
+            e.preventDefault()
+            e.stopImmediatePropagation()
+            e.stopPropagation()
+            const { option, deviceId } = e.target.dataset
+            const res = await deleteAndUpdate(devicesRepo, option, deviceId)()
+            showDeviceContents(mainListContainer)
+            notifyer.init()
           }
           if (e.target.tagName === 'BUTTON' && e.target.dataset.id) {
             const updateButtonElm = updateButton()
@@ -288,12 +300,6 @@ function routes (uri) {
               })
             }
           }
-          if (clickedElement.dataset.option) {
-            const { option, deviceId } = e.target.dataset
-            deleteAndUpdate(devicesRepo, option, deviceId)()
-            showDeviceContents(mainListContainer)
-            notifyer.init()
-          }
           if (clickedElement.dataset.viewImages) {
             const searchParam = clickedElement.dataset.viewImages
             const oldHtml = clickedElement.innerHTML
@@ -363,11 +369,13 @@ function routes (uri) {
       const amount = $cardAmount.querySelector('[data-main-amount]')
       const percent = $cardAmount.querySelector('[data-main-amount-percent]')
       const badge = $cardAmount.querySelector('.badge')
+      const h2 = $cardAmount.querySelector('h2')
       const percentAmount = percentageMonthlyGrowth(amountValue.income, amountValue.incomeDifference.value)
       badge.children[1].textContent = percentAmount
       badge.children[0].className = +percentAmount.replace('%', '') < 0 ? 'bx bx-down-arrow-alt' : 'bx bx-up-arrow-alt'
       badge.classList.add(+percentAmount.replace('%', '') < 0 ? 'warning' : '')
       amount.innerText = simpleReal(amountValue.income)
+      h2.textContent = `Renda total: ${nFormatter(devicesRepo.find().reduce((acc, cur) => acc += +cur.amount, 0), 1)}`
       percent.style.setProperty('--w', '100%')
       $mainInfoTop.append($cardAmount)
 
@@ -428,7 +436,7 @@ function routes (uri) {
                   }
                 }
               }
-            }
+            },
           }
       });
 
