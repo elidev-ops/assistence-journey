@@ -492,6 +492,7 @@ details > span:last-of-type:after {
   background-color: var(--bg-secondary);
   padding: 2em;
   overflow: scroll;
+  overflow-x: hidden;
 }
 
 .main_info-top {
@@ -2037,6 +2038,7 @@ a.show-text:hover {
   bottom: -17px;
   display: none;
   background-color: #181818;
+  z-index: 99999;
 }
 
 [data-text]::after {
@@ -2052,6 +2054,7 @@ a.show-text:hover {
   color: #fff;
   border-radius: 10px;
   background-color: #181818;
+  z-index: 99999;
 }
 [data-text]:hover::after,
 [data-text]:hover::before {

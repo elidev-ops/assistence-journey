@@ -52,7 +52,7 @@ export function updateHistory () {
     historyRepo.insert(currentHistoryData)
   }
   
-  historyRepo.updateOne({ id }, currentHistoryData)
+  historyRepo.updateOne({ id }, currentHistoryData) // bug na atualização de dados quando caixa fechado
 }
 
 function filterToDate (arr) {

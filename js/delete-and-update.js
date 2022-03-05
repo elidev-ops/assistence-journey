@@ -1,5 +1,15 @@
 import { updateHistory } from './create-history.js'
 import { updateItem } from './update-item.js'
+import { showDeviceContents, showClientContents } from './dashboard.js'
+import { EventEmitter } from './emitter.js'
+
+function updateDom () {
+  const mainListContainer = document.querySelector('.main_list-container')
+  showDeviceContents(mainListContainer)
+  showClientContents(mainListContainer)
+}
+const emitter = new EventEmitter()
+emitter.on('updateDom', updateDom)
 
 
 export const deleteAndUpdate = (repository, fn, id) => ({
@@ -22,6 +32,7 @@ export const deleteAndUpdate = (repository, fn, id) => ({
           if (JSON.parse(e.target.dataset.alert)) {
             repository.deleteOne(id)
             updateHistory()
+            emitter.emit('updateDom')
           }
           alertBox.remove()
           resolve(true)
